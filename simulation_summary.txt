@@ -1,0 +1,61 @@
+CPU SCHEDULING SIMULATION SUMMARY
+========================================
+Processes simulated : 25
+Random seed          : 42
+Round Robin quantum  : 4
+
+[FCFS]
+  Avg Waiting Time      : 102.32 ticks
+  Avg Turnaround Time   : 113.12 ticks
+  Avg Response Time     : 102.32 ticks
+  CPU Utilization       : 98.5%
+  Idle CPU Time         : 4 ticks (1.5%)
+  Throughput            : 0.0912 proc/tick
+  Context Switches      : 24
+  Fairness Index        : 0.687
+  Starvation Score      : 1.02  (designed heuristic)
+  Scheduling Efficiency : 33.5 / 100  (designed heuristic)
+  Energy Score (sim)    : 342 units
+  Cache Miss Rate (sim) : 5.9%
+
+[SJF]
+  Avg Waiting Time      : 71.60 ticks
+  Avg Turnaround Time   : 82.40 ticks
+  Avg Response Time     : 71.60 ticks
+  CPU Utilization       : 98.5%
+  Idle CPU Time         : 4 ticks (1.5%)
+  Throughput            : 0.0912 proc/tick
+  Context Switches      : 24
+  Fairness Index        : 0.521
+  Starvation Score      : 2.06  (designed heuristic)
+  Scheduling Efficiency : 16.8 / 100  (designed heuristic)
+  Energy Score (sim)    : 342 units
+  Cache Miss Rate (sim) : 15.4%
+
+[Priority]
+  Avg Waiting Time      : 98.20 ticks
+  Avg Turnaround Time   : 109.00 ticks
+  Avg Response Time     : 98.20 ticks
+  CPU Utilization       : 98.5%
+  Idle CPU Time         : 4 ticks (1.5%)
+  Throughput            : 0.0912 proc/tick
+  Context Switches      : 24
+  Fairness Index        : 0.636
+  Starvation Score      : 1.27  (designed heuristic)
+  Scheduling Efficiency : 27.6 / 100  (designed heuristic)
+  Energy Score (sim)    : 342 units
+  Cache Miss Rate (sim) : 6.0%
+
+[Round Robin]
+  Avg Waiting Time      : 133.40 ticks
+  Avg Turnaround Time   : 144.20 ticks
+  Avg Response Time     : 39.00 ticks
+  CPU Utilization       : 98.5%
+  Idle CPU Time         : 4 ticks (1.5%)
+  Throughput            : 0.0912 proc/tick
+  Context Switches      : 73
+  Fairness Index        : 0.783
+  Starvation Score      : 0.63  (designed heuristic)
+  Scheduling Efficiency : 47.2 / 100  (designed heuristic)
+  Energy Score (sim)    : 489 units
+  Cache Miss Rate (sim) : 84.5%

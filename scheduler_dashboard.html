@@ -1,0 +1,2929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCHED:// — CPU Scheduling Simulator &amp; Analysis Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+  --bg: #07090d;
+  --bg-raised: #0d1119;
+  --bg-raised-2: #121828;
+  --glass: rgba(255,255,255,0.045);
+  --glass-strong: rgba(255,255,255,0.07);
+  --border: rgba(255,255,255,0.09);
+  --border-bright: rgba(0,217,255,0.35);
+  --cyan: #00d9ff;
+  --violet: #b14eff;
+  --amber: #ffb020;
+  --green: #3dffa0;
+  --red: #ff4d6d;
+  --text: #e9edf3;
+  --text-muted: #7e8a9c;
+  --text-dim: #4d5766;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius: 10px;
+  --sidebar-w: 232px;
+}
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; }
+body {
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse 1200px 600px at 15% -10%, rgba(0,217,255,0.07), transparent),
+    radial-gradient(ellipse 900px 500px at 100% 10%, rgba(177,78,255,0.05), transparent);
+  color: var(--text); font-family: var(--font-body); min-height: 100vh; -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+button, select, input { font-family: inherit; }
+
+/* ---------- shell: sidebar + main ---------- */
+#shell { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: var(--sidebar-w); flex-shrink: 0;
+  background: var(--bg-raised); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; padding: 20px 14px;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+}
+.sidebar-brand { padding: 6px 8px 20px; }
+.brand-mark { font-family: var(--font-display); font-weight: 700; font-size: 19px; letter-spacing: 0.02em;
+  background: linear-gradient(90deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.brand-sub { font-family: var(--font-mono); font-size: 9.5px; color: var(--text-dim); letter-spacing: 0.06em; margin-top: 2px; }
+
+.nav-group-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; margin: 14px 8px 6px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+  background: transparent; border: none; color: var(--text-muted); font-size: 13.5px; font-weight: 500;
+  padding: 9px 10px; border-radius: 8px; cursor: pointer; transition: all 0.15s ease; margin-bottom: 2px;
+}
+.nav-item .ic { width: 16px; text-align: center; opacity: 0.8; }
+.nav-item:hover { background: var(--glass); color: var(--text); }
+.nav-item.active { background: var(--glass-strong); color: var(--text); box-shadow: inset 0 0 0 1px var(--border-bright); }
+.sidebar-footer { margin-top: auto; padding: 10px 8px 4px; font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); line-height: 1.6; }
+
+.main { flex: 1; min-width: 0; padding: 20px 24px 60px; max-width: 1320px; }
+
+/* ---------- topbar ---------- */
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  padding: 12px 18px; background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius);
+  backdrop-filter: blur(16px); margin-bottom: 16px; }
+.page-title { font-family: var(--font-display); font-size: 16px; font-weight: 600; }
+.clock { font-family: var(--font-mono); font-size: 13px; color: var(--cyan); padding: 6px 12px;
+  background: rgba(0,217,255,0.07); border: 1px solid rgba(0,217,255,0.25); border-radius: 6px;
+  display: flex; align-items: center; gap: 8px; }
+.clock .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+.topbar-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.icon-btn { font-size: 12px; font-weight: 600; color: var(--text-muted); background: var(--bg-raised);
+  border: 1px solid var(--border); border-radius: 7px; padding: 7px 12px; cursor: pointer;
+  display: flex; align-items: center; gap: 6px; transition: all 0.15s ease; }
+.icon-btn:hover { color: var(--text); border-color: var(--border-bright); background: var(--bg-raised-2); }
+.icon-btn.primary { color: var(--bg); background: var(--cyan); border-color: var(--cyan); }
+.icon-btn.primary:hover { background: #33e2ff; }
+
+/* ---------- algorithm tabs ---------- */
+.algo-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+.algo-tab { font-size: 13px; font-weight: 600; color: var(--text-muted); background: var(--glass);
+  border: 1px solid var(--border); border-radius: 8px; padding: 9px 16px; cursor: pointer;
+  transition: all 0.15s ease; display: flex; align-items: center; gap: 8px; }
+.algo-tab .swatch { width: 8px; height: 8px; border-radius: 50%; }
+.algo-tab:hover { color: var(--text); border-color: var(--border-bright); }
+.algo-tab.active { color: var(--text); background: var(--bg-raised-2); border-color: var(--border-bright);
+  box-shadow: 0 0 0 1px var(--border-bright), 0 0 20px -8px var(--cyan); }
+
+/* ---------- glass panel ---------- */
+.panel { background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius);
+  backdrop-filter: blur(16px); padding: 18px 20px; margin-bottom: 16px; }
+.panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+.panel-title { font-family: var(--font-display); font-size: 14px; font-weight: 600; letter-spacing: 0.02em; color: var(--text); text-transform: uppercase; }
+.panel-title .n { color: var(--text-dim); font-weight: 400; margin-left: 6px; font-family: var(--font-mono); text-transform: none; }
+
+/* ---------- gantt ---------- */
+#gantt-wrap { position: relative; overflow-x: auto; padding-bottom: 4px; }
+#gantt-track { position: relative; height: 64px; background: var(--bg-raised); border-radius: 6px; border: 1px solid var(--border); min-width: 560px; }
+.gantt-seg { position: absolute; top: 8px; height: 48px; border-radius: 4px; cursor: pointer;
+  transition: filter 0.15s ease, transform 0.15s ease; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: rgba(0,0,0,0.75); overflow: hidden;
+  white-space: nowrap; box-shadow: 0 0 0 1px rgba(0,0,0,0.3); }
+.gantt-seg:hover { filter: brightness(1.25); transform: translateY(-2px); z-index: 5; }
+#gantt-playhead { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--amber);
+  box-shadow: 0 0 10px var(--amber), 0 0 20px var(--amber); pointer-events: none; transition: left 0.05s linear; }
+#gantt-playhead::before { content: ''; position: absolute; top: 0; left: -4px; width: 10px; height: 10px;
+  background: var(--amber); border-radius: 50%; box-shadow: 0 0 8px var(--amber); }
+.gantt-ruler { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); margin-top: 6px; min-width: 560px; }
+
+.transport { display: flex; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.transport-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
+  background: var(--bg-raised); color: var(--text); cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; justify-content: center; transition: all 0.15s ease; }
+.transport-btn:hover { border-color: var(--border-bright); color: var(--cyan); }
+#scrubber { flex: 1; min-width: 140px; accent-color: var(--cyan); }
+.speed-select { font-family: var(--font-mono); font-size: 12px; background: var(--bg-raised); color: var(--text);
+  border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; cursor: pointer; }
+.tick-readout { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); min-width: 90px; text-align: right; }
+
+/* ---------- queue lanes ---------- */
+.lanes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.lane { background: var(--bg-raised); border: 1px solid var(--border); border-radius: 8px; padding: 10px; min-height: 140px; }
+.lane-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 8px; display: flex; justify-content: space-between; }
+.lane-label .count { color: var(--text-muted); }
+.chip-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: rgba(0,0,0,0.8);
+  width: 30px; height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.chip:hover { transform: scale(1.15); z-index: 2; }
+.lane[data-lane="running"] .chip { box-shadow: 0 0 10px currentColor; animation: chip-run 1s ease-in-out infinite; }
+@keyframes chip-run { 0%,100% { box-shadow: 0 0 6px currentColor; } 50% { box-shadow: 0 0 14px currentColor; } }
+
+/* ---------- metrics ---------- */
+.metrics-section-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; margin: 4px 0 8px; }
+.metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 4px; }
+.metric-card { background: var(--bg-raised); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; transition: border-color 0.2s ease; }
+.metric-card:hover { border-color: var(--border-bright); }
+.metric-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+.metric-value { font-family: var(--font-display); font-size: 21px; font-weight: 600; color: var(--text); }
+.metric-value.accent-cyan { color: var(--cyan); } .metric-value.accent-violet { color: var(--violet); }
+.metric-value.accent-amber { color: var(--amber); } .metric-value.accent-green { color: var(--green); }
+.metric-unit { font-size: 12px; color: var(--text-muted); font-weight: 400; margin-left: 2px; }
+
+/* ---------- gauge widget ---------- */
+.gauge-row { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+.gauge-box { text-align: center; }
+.gauge-caption { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* ---------- process table ---------- */
+table.process-table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 12px; }
+table.process-table th { text-align: left; padding: 8px 10px; color: var(--text-dim); font-weight: 600;
+  border-bottom: 1px solid var(--border); text-transform: uppercase; font-size: 10px; letter-spacing: 0.04em;
+  position: sticky; top: 0; background: var(--bg-raised); }
+table.process-table td { padding: 7px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text); }
+table.process-table tr { cursor: pointer; transition: background 0.1s ease; }
+table.process-table tr:hover { background: var(--glass-strong); }
+.pid-swatch { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+.table-scroll { max-height: 320px; overflow-y: auto; }
+
+/* ---------- compare view ---------- */
+.compare-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; }
+.compare-grid .panel canvas { max-height: 320px; }
+.heatmap-table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 11px; }
+.heatmap-table th { text-align: left; padding: 8px; color: var(--text-dim); font-size: 10px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+.heatmap-table td { padding: 8px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.04); font-weight: 600; }
+.heatmap-table td:first-child { text-align: left; color: var(--text-muted); font-weight: 400; }
+.pie-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.pie-row canvas { max-width: 240px; max-height: 240px; }
+
+/* ---------- workload panel ---------- */
+.workload-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+.workload-tab { font-size: 12.5px; font-weight: 600; color: var(--text-muted); background: var(--bg-raised);
+  border: 1px solid var(--border); border-radius: 7px; padding: 7px 14px; cursor: pointer; }
+.workload-tab.active { color: var(--text); border-color: var(--border-bright); background: var(--bg-raised-2); }
+.form-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.form-field { display: flex; flex-direction: column; gap: 4px; }
+.form-field label { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; }
+.form-field input, .form-field select { background: var(--bg-raised); border: 1px solid var(--border); color: var(--text);
+  border-radius: 6px; padding: 8px 10px; font-family: var(--font-mono); font-size: 13px; width: 140px; }
+.form-field input:focus, .form-field select:focus { border-color: var(--border-bright); }
+
+table.custom-input-table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 12.5px; margin-bottom: 12px; }
+table.custom-input-table th { text-align: left; padding: 6px 8px; color: var(--text-dim); font-size: 10px; text-transform: uppercase; }
+table.custom-input-table td { padding: 4px 8px; }
+table.custom-input-table input { width: 90px; background: var(--bg-raised); border: 1px solid var(--border);
+  color: var(--text); border-radius: 5px; padding: 5px 7px; font-family: var(--font-mono); font-size: 12.5px; }
+.row-remove { background: transparent; border: none; color: var(--red); cursor: pointer; font-size: 15px; }
+.validation-msg { font-family: var(--font-mono); font-size: 12px; color: var(--red); margin-top: 6px; min-height: 16px; }
+
+/* ---------- modal ---------- */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(4,6,10,0.75); backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+.modal-backdrop.open { display: flex; }
+.modal { background: var(--bg-raised-2); border: 1px solid var(--border-bright); border-radius: 12px;
+  padding: 24px; max-width: 480px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.modal-title { font-family: var(--font-display); font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+.modal-close { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; line-height: 1; }
+.modal-close:hover { color: var(--text); }
+.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.modal-field .k { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; }
+.modal-field .v { font-family: var(--font-mono); font-size: 15px; color: var(--text); margin-top: 2px; }
+.mini-timeline { height: 28px; background: var(--bg-raised); border-radius: 6px; position: relative; overflow: hidden; border: 1px solid var(--border); }
+.mini-seg { position: absolute; top: 2px; bottom: 2px; border-radius: 3px; }
+
+.footnote { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 24px; line-height: 1.6; }
+input[type=file] { display: none; }
+
+.view-section { display: none; }
+.view-section.active { display: block; }
+
+@media (max-width: 980px) {
+  .sidebar { position: fixed; left: -100%; z-index: 50; transition: left 0.2s ease; box-shadow: 20px 0 40px rgba(0,0,0,0.4); }
+  .sidebar.open { left: 0; }
+  .main { padding: 16px; }
+  .lanes { grid-template-columns: repeat(2, 1fr); }
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  .compare-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">SCHED://</div>
+      <div class="brand-sub">CPU SCHEDULING ANALYSIS PLATFORM</div>
+    </div>
+
+    <div class="nav-group-label">SIMULATION</div>
+    <button class="nav-item active" data-view="replay"><span class="ic">&#9636;</span> Live Replay</button>
+    <button class="nav-item" data-view="compare"><span class="ic">&#9638;</span> Compare Algorithms</button>
+    <button class="nav-item" data-view="workload"><span class="ic">&#9881;</span> Workload Setup</button>
+
+    <div class="nav-group-label">DATA</div>
+    <label class="nav-item" for="file-input" style="cursor:pointer;"><span class="ic">&#8607;</span> Load JSON</label>
+    <input type="file" id="file-input" accept="application/json">
+
+    <div class="sidebar-footer">
+      4 algorithms &middot; FCFS / SJF /<br>Priority / Round Robin<br><br>
+      No ML/RL components.<br>All metrics computed from<br>real simulation output.
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <div class="topbar">
+      <div class="page-title" id="page-title">Live Replay</div>
+      <div class="clock"><span class="dot"></span><span id="clock-readout">t = 0</span></div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="btn-export-csv">&#8681; CSV</button>
+        <button class="icon-btn" id="btn-export-json">&#8681; JSON</button>
+        <button class="icon-btn" id="btn-export-png">&#8681; PNG</button>
+        <button class="icon-btn primary" id="btn-print">PDF</button>
+      </div>
+    </div>
+
+    <!-- ===================== REPLAY VIEW ===================== -->
+    <section class="view-section active" id="view-replay">
+      <div class="algo-tabs" id="algo-tabs"></div>
+
+      <div class="panel" id="gantt-panel">
+        <div class="panel-header"><div class="panel-title">Execution Timeline <span class="n" id="gantt-subtitle"></span></div></div>
+        <div id="gantt-wrap">
+          <div id="gantt-track"><div id="gantt-playhead" style="left:0"></div></div>
+          <div class="gantt-ruler" id="gantt-ruler"></div>
+        </div>
+        <div class="transport">
+          <button class="transport-btn" id="btn-play" title="Play/Pause">&#9654;</button>
+          <button class="transport-btn" id="btn-step" title="Step +1 tick">&#9197;</button>
+          <button class="transport-btn" id="btn-reset" title="Reset">&#8635;</button>
+          <input type="range" id="scrubber" min="0" max="100" value="0">
+          <select class="speed-select" id="speed-select">
+            <option value="1">1&times;</option><option value="2" selected>2&times;</option>
+            <option value="4">4&times;</option><option value="8">8&times;</option>
+          </select>
+          <div class="tick-readout" id="tick-readout">tick 0 / 0</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Process State Timeline</div></div>
+        <div class="lanes">
+          <div class="lane" data-lane="new"><div class="lane-label"><span>NEW</span><span class="count" id="count-new">0</span></div><div class="chip-grid" id="lane-new"></div></div>
+          <div class="lane" data-lane="ready"><div class="lane-label"><span>READY</span><span class="count" id="count-ready">0</span></div><div class="chip-grid" id="lane-ready"></div></div>
+          <div class="lane" data-lane="running"><div class="lane-label"><span>RUNNING</span><span class="count" id="count-running">0</span></div><div class="chip-grid" id="lane-running"></div></div>
+          <div class="lane" data-lane="terminated"><div class="lane-label"><span>TERMINATED</span><span class="count" id="count-terminated">0</span></div><div class="chip-grid" id="lane-terminated"></div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Metrics</div></div>
+        <div class="gauge-row">
+          <div class="gauge-box"><svg id="gauge-cpu" width="140" height="90" viewBox="0 0 140 90"></svg><div class="gauge-caption">CPU Utilization</div></div>
+          <div class="gauge-box"><svg id="gauge-idle" width="140" height="90" viewBox="0 0 140 90"></svg><div class="gauge-caption">Idle Time</div></div>
+          <div class="gauge-box"><svg id="gauge-efficiency" width="140" height="90" viewBox="0 0 140 90"></svg><div class="gauge-caption">Efficiency Score</div></div>
+        </div>
+        <div class="metrics-section-label">LIVE — as of current tick</div>
+        <div class="metrics-grid" id="metrics-live"></div>
+        <div class="metrics-section-label" style="margin-top:14px;">FINAL — full episode result</div>
+        <div class="metrics-grid" id="metrics-final"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Process Inspector <span class="n">click a row or timeline block</span></div></div>
+        <div class="table-scroll">
+          <table class="process-table">
+            <thead><tr><th>PID</th><th>Arrival</th><th>Burst</th><th>Priority</th><th>Wait</th><th>Turnaround</th><th>Response</th><th>Completion</th></tr></thead>
+            <tbody id="process-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== COMPARE VIEW ===================== -->
+    <section class="view-section" id="view-compare">
+      <div class="compare-grid">
+        <div class="panel"><div class="panel-header"><div class="panel-title">Avg Waiting Time by Algorithm</div></div><canvas id="chart-bar"></canvas></div>
+        <div class="panel"><div class="panel-header"><div class="panel-title">Multi-Metric Radar</div></div><canvas id="chart-radar"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Throughput &amp; Context-Switch Share</div></div>
+        <div class="pie-row">
+          <canvas id="chart-pie-throughput"></canvas>
+          <canvas id="chart-pie-switches"></canvas>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Performance Heatmap</div></div>
+        <div style="overflow-x:auto;"><table class="heatmap-table" id="heatmap"></table></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Raw Comparison Table</div></div>
+        <div style="overflow-x:auto;"><table class="heatmap-table" id="compare-table"></table></div>
+      </div>
+    </section>
+
+    <!-- ===================== WORKLOAD VIEW ===================== -->
+    <section class="view-section" id="view-workload">
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Workload Setup</div></div>
+        <div class="workload-tabs">
+          <button class="workload-tab active" data-wtab="random">Random Generator</button>
+          <button class="workload-tab" data-wtab="custom">Custom Process Input</button>
+        </div>
+
+        <div id="wtab-random">
+          <div class="form-row">
+            <div class="form-field"><label>Process Count</label><input type="number" id="wf-n" value="25" min="0" max="2000"></div>
+            <div class="form-field"><label>Random Seed</label><input type="number" id="wf-seed" value="42"></div>
+            <div class="form-field"><label>Arrival Rate</label><input type="number" id="wf-rate" value="0.5" step="0.1" min="0.01"></div>
+            <div class="form-field"><label>Min Burst</label><input type="number" id="wf-burst-min" value="2" min="1"></div>
+            <div class="form-field"><label>Max Burst</label><input type="number" id="wf-burst-max" value="20" min="1"></div>
+            <div class="form-field"><label>RR Quantum</label><input type="number" id="wf-quantum" value="4" min="1"></div>
+          </div>
+          <button class="icon-btn primary" id="btn-generate-random">&#9654; Generate &amp; Simulate</button>
+        </div>
+
+        <div id="wtab-custom" style="display:none;">
+          <table class="custom-input-table" id="custom-table">
+            <thead><tr><th>PID</th><th>Arrival Time</th><th>Burst Time</th><th>Priority</th><th></th></tr></thead>
+            <tbody id="custom-table-body"></tbody>
+          </table>
+          <div class="form-row">
+            <button class="icon-btn" id="btn-add-row">+ Add Process</button>
+            <div class="form-field"><label>RR Quantum</label><input type="number" id="wf-quantum-custom" value="4" min="1"></div>
+          </div>
+          <button class="icon-btn primary" id="btn-simulate-custom">&#9654; Simulate Custom Workload</button>
+          <div class="validation-msg" id="custom-validation"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title" style="margin-bottom:8px;">About This Simulator</div>
+        <p style="color:var(--text-muted); font-size:13px; line-height:1.6; max-width:760px;">
+          This dashboard runs a JavaScript re-implementation of the exact same four algorithms
+          as the Python backend (FCFS, SJF, Priority, Round Robin) so you can generate and explore
+          workloads instantly, without a server round-trip. For research records, run
+          <code style="color:var(--cyan)">python main.py</code> — it produces the same simulation
+          plus a CSV/JSON/PDF report from the tested, canonical implementation. Load that JSON here
+          via "Load JSON" in the sidebar any time.
+        </p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title"><span class="pid-swatch" id="modal-swatch"></span><span id="modal-title-text">Process</span></div>
+      <button class="modal-close" id="modal-close">&times;</button>
+    </div>
+    <div class="modal-grid" id="modal-grid"></div>
+    <div class="metric-label" style="margin-bottom:6px;">EXECUTION HISTORY</div>
+    <div class="mini-timeline" id="modal-timeline"></div>
+  </div>
+</div>
+
+<script id="dashboard-data-json" type="application/json">{
+  "meta": {
+    "n_processes": 25,
+    "seed": 42,
+    "quantum": 4,
+    "source": "random"
+  },
+  "algorithms": {
+    "FCFS": {
+      "metrics": {
+        "algorithm": "FCFS",
+        "avg_waiting_time": 102.32,
+        "avg_turnaround_time": 113.12,
+        "avg_response_time": 102.32,
+        "throughput": 0.09124087591240876,
+        "cpu_utilization": 0.9854014598540146,
+        "idle_cpu_time": 4,
+        "idle_cpu_percentage": 0.014598540145985401,
+        "context_switches": 24,
+        "fairness_index": 0.6869709552281115,
+        "starvation_score": 1.0230648944487883,
+        "energy_score": 342.0,
+        "cache_miss_rate": 0.0585036496350365,
+        "scheduling_efficiency_score": 33.461219361602836,
+        "total_time": 274,
+        "process_count": 25
+      },
+      "processes": [
+        {
+          "pid": 0,
+          "arrival_time": 4,
+          "burst_time": 16,
+          "priority": 2,
+          "waiting_time": 0,
+          "turnaround_time": 16,
+          "response_time": 0,
+          "completion_time": 20,
+          "execution_history": [
+            [
+              4,
+              20
+            ]
+          ]
+        },
+        {
+          "pid": 1,
+          "arrival_time": 9,
+          "burst_time": 5,
+          "priority": 1,
+          "waiting_time": 11,
+          "turnaround_time": 16,
+          "response_time": 11,
+          "completion_time": 25,
+          "execution_history": [
+            [
+              20,
+              25
+            ]
+          ]
+        },
+        {
+          "pid": 2,
+          "arrival_time": 14,
+          "burst_time": 8,
+          "priority": 1,
+          "waiting_time": 11,
+          "turnaround_time": 19,
+          "response_time": 11,
+          "completion_time": 33,
+          "execution_history": [
+            [
+              25,
+              33
+            ]
+          ]
+        },
+        {
+          "pid": 3,
+          "arrival_time": 14,
+          "burst_time": 10,
+          "priority": 2,
+          "waiting_time": 19,
+          "turnaround_time": 29,
+          "response_time": 19,
+          "completion_time": 43,
+          "execution_history": [
+            [
+              33,
+              43
+            ]
+          ]
+        },
+        {
+          "pid": 4,
+          "arrival_time": 14,
+          "burst_time": 11,
+          "priority": 3,
+          "waiting_time": 29,
+          "turnaround_time": 40,
+          "response_time": 29,
+          "completion_time": 54,
+          "execution_history": [
+            [
+              43,
+              54
+            ]
+          ]
+        },
+        {
+          "pid": 5,
+          "arrival_time": 17,
+          "burst_time": 2,
+          "priority": 4,
+          "waiting_time": 37,
+          "turnaround_time": 39,
+          "response_time": 37,
+          "completion_time": 56,
+          "execution_history": [
+            [
+              54,
+              56
+            ]
+          ]
+        },
+        {
+          "pid": 6,
+          "arrival_time": 20,
+          "burst_time": 12,
+          "priority": 2,
+          "waiting_time": 36,
+          "turnaround_time": 48,
+          "response_time": 36,
+          "completion_time": 68,
+          "execution_history": [
+            [
+              56,
+              68
+            ]
+          ]
+        },
+        {
+          "pid": 7,
+          "arrival_time": 26,
+          "burst_time": 4,
+          "priority": 0,
+          "waiting_time": 42,
+          "turnaround_time": 46,
+          "response_time": 42,
+          "completion_time": 72,
+          "execution_history": [
+            [
+              68,
+              72
+            ]
+          ]
+        },
+        {
+          "pid": 8,
+          "arrival_time": 27,
+          "burst_time": 16,
+          "priority": 4,
+          "waiting_time": 45,
+          "turnaround_time": 61,
+          "response_time": 45,
+          "completion_time": 88,
+          "execution_history": [
+            [
+              72,
+              88
+            ]
+          ]
+        },
+        {
+          "pid": 9,
+          "arrival_time": 29,
+          "burst_time": 14,
+          "priority": 3,
+          "waiting_time": 59,
+          "turnaround_time": 73,
+          "response_time": 59,
+          "completion_time": 102,
+          "execution_history": [
+            [
+              88,
+              102
+            ]
+          ]
+        },
+        {
+          "pid": 10,
+          "arrival_time": 29,
+          "burst_time": 19,
+          "priority": 3,
+          "waiting_time": 73,
+          "turnaround_time": 92,
+          "response_time": 73,
+          "completion_time": 121,
+          "execution_history": [
+            [
+              102,
+              121
+            ]
+          ]
+        },
+        {
+          "pid": 11,
+          "arrival_time": 31,
+          "burst_time": 16,
+          "priority": 0,
+          "waiting_time": 90,
+          "turnaround_time": 106,
+          "response_time": 90,
+          "completion_time": 137,
+          "execution_history": [
+            [
+              121,
+              137
+            ]
+          ]
+        },
+        {
+          "pid": 12,
+          "arrival_time": 34,
+          "burst_time": 8,
+          "priority": 1,
+          "waiting_time": 103,
+          "turnaround_time": 111,
+          "response_time": 103,
+          "completion_time": 145,
+          "execution_history": [
+            [
+              137,
+              145
+            ]
+          ]
+        },
+        {
+          "pid": 13,
+          "arrival_time": 35,
+          "burst_time": 20,
+          "priority": 3,
+          "waiting_time": 110,
+          "turnaround_time": 130,
+          "response_time": 110,
+          "completion_time": 165,
+          "execution_history": [
+            [
+              145,
+              165
+            ]
+          ]
+        },
+        {
+          "pid": 14,
+          "arrival_time": 38,
+          "burst_time": 9,
+          "priority": 4,
+          "waiting_time": 127,
+          "turnaround_time": 136,
+          "response_time": 127,
+          "completion_time": 174,
+          "execution_history": [
+            [
+              165,
+              174
+            ]
+          ]
+        },
+        {
+          "pid": 15,
+          "arrival_time": 38,
+          "burst_time": 8,
+          "priority": 2,
+          "waiting_time": 136,
+          "turnaround_time": 144,
+          "response_time": 136,
+          "completion_time": 182,
+          "execution_history": [
+            [
+              174,
+              182
+            ]
+          ]
+        },
+        {
+          "pid": 16,
+          "arrival_time": 38,
+          "burst_time": 19,
+          "priority": 4,
+          "waiting_time": 144,
+          "turnaround_time": 163,
+          "response_time": 144,
+          "completion_time": 201,
+          "execution_history": [
+            [
+              182,
+              201
+            ]
+          ]
+        },
+        {
+          "pid": 17,
+          "arrival_time": 39,
+          "burst_time": 9,
+          "priority": 4,
+          "waiting_time": 162,
+          "turnaround_time": 171,
+          "response_time": 162,
+          "completion_time": 210,
+          "execution_history": [
+            [
+              201,
+              210
+            ]
+          ]
+        },
+        {
+          "pid": 18,
+          "arrival_time": 41,
+          "burst_time": 3,
+          "priority": 1,
+          "waiting_time": 169,
+          "turnaround_time": 172,
+          "response_time": 169,
+          "completion_time": 213,
+          "execution_history": [
+            [
+              210,
+              213
+            ]
+          ]
+        },
+        {
+          "pid": 19,
+          "arrival_time": 41,
+          "burst_time": 10,
+          "priority": 4,
+          "waiting_time": 172,
+          "turnaround_time": 182,
+          "response_time": 172,
+          "completion_time": 223,
+          "execution_history": [
+            [
+              213,
+              223
+            ]
+          ]
+        },
+        {
+          "pid": 20,
+          "arrival_time": 44,
+          "burst_time": 17,
+          "priority": 1,
+          "waiting_time": 179,
+          "turnaround_time": 196,
+          "response_time": 179,
+          "completion_time": 240,
+          "execution_history": [
+            [
+              223,
+              240
+            ]
+          ]
+        },
+        {
+          "pid": 21,
+          "arrival_time": 44,
+          "burst_time": 5,
+          "priority": 1,
+          "waiting_time": 196,
+          "turnaround_time": 201,
+          "response_time": 196,
+          "completion_time": 245,
+          "execution_history": [
+            [
+              240,
+              245
+            ]
+          ]
+        },
+        {
+          "pid": 22,
+          "arrival_time": 48,
+          "burst_time": 10,
+          "priority": 3,
+          "waiting_time": 197,
+          "turnaround_time": 207,
+          "response_time": 197,
+          "completion_time": 255,
+          "execution_history": [
+            [
+              245,
+              255
+            ]
+          ]
+        },
+        {
+          "pid": 23,
+          "arrival_time": 51,
+          "burst_time": 4,
+          "priority": 3,
+          "waiting_time": 204,
+          "turnaround_time": 208,
+          "response_time": 204,
+          "completion_time": 259,
+          "execution_history": [
+            [
+              255,
+              259
+            ]
+          ]
+        },
+        {
+          "pid": 24,
+          "arrival_time": 52,
+          "burst_time": 15,
+          "priority": 0,
+          "waiting_time": 207,
+          "turnaround_time": 222,
+          "response_time": 207,
+          "completion_time": 274,
+          "execution_history": [
+            [
+              259,
+              274
+            ]
+          ]
+        }
+      ]
+    },
+    "SJF": {
+      "metrics": {
+        "algorithm": "SJF",
+        "avg_waiting_time": 71.6,
+        "avg_turnaround_time": 82.4,
+        "avg_response_time": 71.6,
+        "throughput": 0.09124087591240876,
+        "cpu_utilization": 0.9854014598540146,
+        "idle_cpu_time": 4,
+        "idle_cpu_percentage": 0.014598540145985401,
+        "context_switches": 24,
+        "fairness_index": 0.5205179023978166,
+        "starvation_score": 2.058659217877095,
+        "energy_score": 342.0,
+        "cache_miss_rate": 0.15427007299270049,
+        "scheduling_efficiency_score": 16.769409874270224,
+        "total_time": 274,
+        "process_count": 25
+      },
+      "processes": [
+        {
+          "pid": 0,
+          "arrival_time": 4,
+          "burst_time": 16,
+          "priority": 2,
+          "waiting_time": 0,
+          "turnaround_time": 16,
+          "response_time": 0,
+          "completion_time": 20,
+          "execution_history": [
+            [
+              4,
+              20
+            ]
+          ]
+        },
+        {
+          "pid": 1,
+          "arrival_time": 9,
+          "burst_time": 5,
+          "priority": 1,
+          "waiting_time": 13,
+          "turnaround_time": 18,
+          "response_time": 13,
+          "completion_time": 27,
+          "execution_history": [
+            [
+              22,
+              27
+            ]
+          ]
+        },
+        {
+          "pid": 2,
+          "arrival_time": 14,
+          "burst_time": 8,
+          "priority": 1,
+          "waiting_time": 17,
+          "turnaround_time": 25,
+          "response_time": 17,
+          "completion_time": 39,
+          "execution_history": [
+            [
+              31,
+              39
+            ]
+          ]
+        },
+        {
+          "pid": 3,
+          "arrival_time": 14,
+          "burst_time": 10,
+          "priority": 2,
+          "waiting_time": 71,
+          "turnaround_time": 81,
+          "response_time": 71,
+          "completion_time": 95,
+          "execution_history": [
+            [
+              85,
+              95
+            ]
+          ]
+        },
+        {
+          "pid": 4,
+          "arrival_time": 14,
+          "burst_time": 11,
+          "priority": 3,
+          "waiting_time": 101,
+          "turnaround_time": 112,
+          "response_time": 101,
+          "completion_time": 126,
+          "execution_history": [
+            [
+              115,
+              126
+            ]
+          ]
+        },
+        {
+          "pid": 5,
+          "arrival_time": 17,
+          "burst_time": 2,
+          "priority": 4,
+          "waiting_time": 3,
+          "turnaround_time": 5,
+          "response_time": 3,
+          "completion_time": 22,
+          "execution_history": [
+            [
+              20,
+              22
+            ]
+          ]
+        },
+        {
+          "pid": 6,
+          "arrival_time": 20,
+          "burst_time": 12,
+          "priority": 2,
+          "waiting_time": 106,
+          "turnaround_time": 118,
+          "response_time": 106,
+          "completion_time": 138,
+          "execution_history": [
+            [
+              126,
+              138
+            ]
+          ]
+        },
+        {
+          "pid": 7,
+          "arrival_time": 26,
+          "burst_time": 4,
+          "priority": 0,
+          "waiting_time": 1,
+          "turnaround_time": 5,
+          "response_time": 1,
+          "completion_time": 31,
+          "execution_history": [
+            [
+              27,
+              31
+            ]
+          ]
+        },
+        {
+          "pid": 8,
+          "arrival_time": 27,
+          "burst_time": 16,
+          "priority": 4,
+          "waiting_time": 140,
+          "turnaround_time": 156,
+          "response_time": 140,
+          "completion_time": 183,
+          "execution_history": [
+            [
+              167,
+              183
+            ]
+          ]
+        },
+        {
+          "pid": 9,
+          "arrival_time": 29,
+          "burst_time": 14,
+          "priority": 3,
+          "waiting_time": 109,
+          "turnaround_time": 123,
+          "response_time": 109,
+          "completion_time": 152,
+          "execution_history": [
+            [
+              138,
+              152
+            ]
+          ]
+        },
+        {
+          "pid": 10,
+          "arrival_time": 29,
+          "burst_time": 19,
+          "priority": 3,
+          "waiting_time": 187,
+          "turnaround_time": 206,
+          "response_time": 187,
+          "completion_time": 235,
+          "execution_history": [
+            [
+              216,
+              235
+            ]
+          ]
+        },
+        {
+          "pid": 11,
+          "arrival_time": 31,
+          "burst_time": 16,
+          "priority": 0,
+          "waiting_time": 152,
+          "turnaround_time": 168,
+          "response_time": 152,
+          "completion_time": 199,
+          "execution_history": [
+            [
+              183,
+              199
+            ]
+          ]
+        },
+        {
+          "pid": 12,
+          "arrival_time": 34,
+          "burst_time": 8,
+          "priority": 1,
+          "waiting_time": 5,
+          "turnaround_time": 13,
+          "response_time": 5,
+          "completion_time": 47,
+          "execution_history": [
+            [
+              39,
+              47
+            ]
+          ]
+        },
+        {
+          "pid": 13,
+          "arrival_time": 35,
+          "burst_time": 20,
+          "priority": 3,
+          "waiting_time": 219,
+          "turnaround_time": 239,
+          "response_time": 219,
+          "completion_time": 274,
+          "execution_history": [
+            [
+              254,
+              274
+            ]
+          ]
+        },
+        {
+          "pid": 14,
+          "arrival_time": 38,
+          "burst_time": 9,
+          "priority": 4,
+          "waiting_time": 29,
+          "turnaround_time": 38,
+          "response_time": 29,
+          "completion_time": 76,
+          "execution_history": [
+            [
+              67,
+              76
+            ]
+          ]
+        },
+        {
+          "pid": 15,
+          "arrival_time": 38,
+          "burst_time": 8,
+          "priority": 2,
+          "waiting_time": 21,
+          "turnaround_time": 29,
+          "response_time": 21,
+          "completion_time": 67,
+          "execution_history": [
+            [
+              59,
+              67
+            ]
+          ]
+        },
+        {
+          "pid": 16,
+          "arrival_time": 38,
+          "burst_time": 19,
+          "priority": 4,
+          "waiting_time": 197,
+          "turnaround_time": 216,
+          "response_time": 197,
+          "completion_time": 254,
+          "execution_history": [
+            [
+              235,
+              254
+            ]
+          ]
+        },
+        {
+          "pid": 17,
+          "arrival_time": 39,
+          "burst_time": 9,
+          "priority": 4,
+          "waiting_time": 37,
+          "turnaround_time": 46,
+          "response_time": 37,
+          "completion_time": 85,
+          "execution_history": [
+            [
+              76,
+              85
+            ]
+          ]
+        },
+        {
+          "pid": 18,
+          "arrival_time": 41,
+          "burst_time": 3,
+          "priority": 1,
+          "waiting_time": 6,
+          "turnaround_time": 9,
+          "response_time": 6,
+          "completion_time": 50,
+          "execution_history": [
+            [
+              47,
+              50
+            ]
+          ]
+        },
+        {
+          "pid": 19,
+          "arrival_time": 41,
+          "burst_time": 10,
+          "priority": 4,
+          "waiting_time": 54,
+          "turnaround_time": 64,
+          "response_time": 54,
+          "completion_time": 105,
+          "execution_history": [
+            [
+              95,
+              105
+            ]
+          ]
+        },
+        {
+          "pid": 20,
+          "arrival_time": 44,
+          "burst_time": 17,
+          "priority": 1,
+          "waiting_time": 155,
+          "turnaround_time": 172,
+          "response_time": 155,
+          "completion_time": 216,
+          "execution_history": [
+            [
+              199,
+              216
+            ]
+          ]
+        },
+        {
+          "pid": 21,
+          "arrival_time": 44,
+          "burst_time": 5,
+          "priority": 1,
+          "waiting_time": 6,
+          "turnaround_time": 11,
+          "response_time": 6,
+          "completion_time": 55,
+          "execution_history": [
+            [
+              50,
+              55
+            ]
+          ]
+        },
+        {
+          "pid": 22,
+          "arrival_time": 48,
+          "burst_time": 10,
+          "priority": 3,
+          "waiting_time": 57,
+          "turnaround_time": 67,
+          "response_time": 57,
+          "completion_time": 115,
+          "execution_history": [
+            [
+              105,
+              115
+            ]
+          ]
+        },
+        {
+          "pid": 23,
+          "arrival_time": 51,
+          "burst_time": 4,
+          "priority": 3,
+          "waiting_time": 4,
+          "turnaround_time": 8,
+          "response_time": 4,
+          "completion_time": 59,
+          "execution_history": [
+            [
+              55,
+              59
+            ]
+          ]
+        },
+        {
+          "pid": 24,
+          "arrival_time": 52,
+          "burst_time": 15,
+          "priority": 0,
+          "waiting_time": 100,
+          "turnaround_time": 115,
+          "response_time": 100,
+          "completion_time": 167,
+          "execution_history": [
+            [
+              152,
+              167
+            ]
+          ]
+        }
+      ]
+    },
+    "Priority": {
+      "metrics": {
+        "algorithm": "Priority",
+        "avg_waiting_time": 98.2,
+        "avg_turnaround_time": 109.0,
+        "avg_response_time": 98.2,
+        "throughput": 0.09124087591240876,
+        "cpu_utilization": 0.9854014598540146,
+        "idle_cpu_time": 4,
+        "idle_cpu_percentage": 0.014598540145985401,
+        "context_switches": 24,
+        "fairness_index": 0.6356699318400548,
+        "starvation_score": 1.2708757637474541,
+        "energy_score": 342.0,
+        "cache_miss_rate": 0.05959854014598541,
+        "scheduling_efficiency_score": 27.58363486106382,
+        "total_time": 274,
+        "process_count": 25
+      },
+      "processes": [
+        {
+          "pid": 0,
+          "arrival_time": 4,
+          "burst_time": 16,
+          "priority": 2,
+          "waiting_time": 0,
+          "turnaround_time": 16,
+          "response_time": 0,
+          "completion_time": 20,
+          "execution_history": [
+            [
+              4,
+              20
+            ]
+          ]
+        },
+        {
+          "pid": 1,
+          "arrival_time": 9,
+          "burst_time": 5,
+          "priority": 1,
+          "waiting_time": 11,
+          "turnaround_time": 16,
+          "response_time": 11,
+          "completion_time": 25,
+          "execution_history": [
+            [
+              20,
+              25
+            ]
+          ]
+        },
+        {
+          "pid": 2,
+          "arrival_time": 14,
+          "burst_time": 8,
+          "priority": 1,
+          "waiting_time": 11,
+          "turnaround_time": 19,
+          "response_time": 11,
+          "completion_time": 33,
+          "execution_history": [
+            [
+              25,
+              33
+            ]
+          ]
+        },
+        {
+          "pid": 3,
+          "arrival_time": 14,
+          "burst_time": 10,
+          "priority": 2,
+          "waiting_time": 87,
+          "turnaround_time": 97,
+          "response_time": 87,
+          "completion_time": 111,
+          "execution_history": [
+            [
+              101,
+              111
+            ]
+          ]
+        },
+        {
+          "pid": 4,
+          "arrival_time": 14,
+          "burst_time": 11,
+          "priority": 3,
+          "waiting_time": 117,
+          "turnaround_time": 128,
+          "response_time": 117,
+          "completion_time": 142,
+          "execution_history": [
+            [
+              131,
+              142
+            ]
+          ]
+        },
+        {
+          "pid": 5,
+          "arrival_time": 17,
+          "burst_time": 2,
+          "priority": 4,
+          "waiting_time": 192,
+          "turnaround_time": 194,
+          "response_time": 192,
+          "completion_time": 211,
+          "execution_history": [
+            [
+              209,
+              211
+            ]
+          ]
+        },
+        {
+          "pid": 6,
+          "arrival_time": 20,
+          "burst_time": 12,
+          "priority": 2,
+          "waiting_time": 91,
+          "turnaround_time": 103,
+          "response_time": 91,
+          "completion_time": 123,
+          "execution_history": [
+            [
+              111,
+              123
+            ]
+          ]
+        },
+        {
+          "pid": 7,
+          "arrival_time": 26,
+          "burst_time": 4,
+          "priority": 0,
+          "waiting_time": 7,
+          "turnaround_time": 11,
+          "response_time": 7,
+          "completion_time": 37,
+          "execution_history": [
+            [
+              33,
+              37
+            ]
+          ]
+        },
+        {
+          "pid": 8,
+          "arrival_time": 27,
+          "burst_time": 16,
+          "priority": 4,
+          "waiting_time": 184,
+          "turnaround_time": 200,
+          "response_time": 184,
+          "completion_time": 227,
+          "execution_history": [
+            [
+              211,
+              227
+            ]
+          ]
+        },
+        {
+          "pid": 9,
+          "arrival_time": 29,
+          "burst_time": 14,
+          "priority": 3,
+          "waiting_time": 113,
+          "turnaround_time": 127,
+          "response_time": 113,
+          "completion_time": 156,
+          "execution_history": [
+            [
+              142,
+              156
+            ]
+          ]
+        },
+        {
+          "pid": 10,
+          "arrival_time": 29,
+          "burst_time": 19,
+          "priority": 3,
+          "waiting_time": 127,
+          "turnaround_time": 146,
+          "response_time": 127,
+          "completion_time": 175,
+          "execution_history": [
+            [
+              156,
+              175
+            ]
+          ]
+        },
+        {
+          "pid": 11,
+          "arrival_time": 31,
+          "burst_time": 16,
+          "priority": 0,
+          "waiting_time": 6,
+          "turnaround_time": 22,
+          "response_time": 6,
+          "completion_time": 53,
+          "execution_history": [
+            [
+              37,
+              53
+            ]
+          ]
+        },
+        {
+          "pid": 12,
+          "arrival_time": 34,
+          "burst_time": 8,
+          "priority": 1,
+          "waiting_time": 34,
+          "turnaround_time": 42,
+          "response_time": 34,
+          "completion_time": 76,
+          "execution_history": [
+            [
+              68,
+              76
+            ]
+          ]
+        },
+        {
+          "pid": 13,
+          "arrival_time": 35,
+          "burst_time": 20,
+          "priority": 3,
+          "waiting_time": 140,
+          "turnaround_time": 160,
+          "response_time": 140,
+          "completion_time": 195,
+          "execution_history": [
+            [
+              175,
+              195
+            ]
+          ]
+        },
+        {
+          "pid": 14,
+          "arrival_time": 38,
+          "burst_time": 9,
+          "priority": 4,
+          "waiting_time": 189,
+          "turnaround_time": 198,
+          "response_time": 189,
+          "completion_time": 236,
+          "execution_history": [
+            [
+              227,
+              236
+            ]
+          ]
+        },
+        {
+          "pid": 15,
+          "arrival_time": 38,
+          "burst_time": 8,
+          "priority": 2,
+          "waiting_time": 85,
+          "turnaround_time": 93,
+          "response_time": 85,
+          "completion_time": 131,
+          "execution_history": [
+            [
+              123,
+              131
+            ]
+          ]
+        },
+        {
+          "pid": 16,
+          "arrival_time": 38,
+          "burst_time": 19,
+          "priority": 4,
+          "waiting_time": 198,
+          "turnaround_time": 217,
+          "response_time": 198,
+          "completion_time": 255,
+          "execution_history": [
+            [
+              236,
+              255
+            ]
+          ]
+        },
+        {
+          "pid": 17,
+          "arrival_time": 39,
+          "burst_time": 9,
+          "priority": 4,
+          "waiting_time": 216,
+          "turnaround_time": 225,
+          "response_time": 216,
+          "completion_time": 264,
+          "execution_history": [
+            [
+              255,
+              264
+            ]
+          ]
+        },
+        {
+          "pid": 18,
+          "arrival_time": 41,
+          "burst_time": 3,
+          "priority": 1,
+          "waiting_time": 35,
+          "turnaround_time": 38,
+          "response_time": 35,
+          "completion_time": 79,
+          "execution_history": [
+            [
+              76,
+              79
+            ]
+          ]
+        },
+        {
+          "pid": 19,
+          "arrival_time": 41,
+          "burst_time": 10,
+          "priority": 4,
+          "waiting_time": 223,
+          "turnaround_time": 233,
+          "response_time": 223,
+          "completion_time": 274,
+          "execution_history": [
+            [
+              264,
+              274
+            ]
+          ]
+        },
+        {
+          "pid": 20,
+          "arrival_time": 44,
+          "burst_time": 17,
+          "priority": 1,
+          "waiting_time": 35,
+          "turnaround_time": 52,
+          "response_time": 35,
+          "completion_time": 96,
+          "execution_history": [
+            [
+              79,
+              96
+            ]
+          ]
+        },
+        {
+          "pid": 21,
+          "arrival_time": 44,
+          "burst_time": 5,
+          "priority": 1,
+          "waiting_time": 52,
+          "turnaround_time": 57,
+          "response_time": 52,
+          "completion_time": 101,
+          "execution_history": [
+            [
+              96,
+              101
+            ]
+          ]
+        },
+        {
+          "pid": 22,
+          "arrival_time": 48,
+          "burst_time": 10,
+          "priority": 3,
+          "waiting_time": 147,
+          "turnaround_time": 157,
+          "response_time": 147,
+          "completion_time": 205,
+          "execution_history": [
+            [
+              195,
+              205
+            ]
+          ]
+        },
+        {
+          "pid": 23,
+          "arrival_time": 51,
+          "burst_time": 4,
+          "priority": 3,
+          "waiting_time": 154,
+          "turnaround_time": 158,
+          "response_time": 154,
+          "completion_time": 209,
+          "execution_history": [
+            [
+              205,
+              209
+            ]
+          ]
+        },
+        {
+          "pid": 24,
+          "arrival_time": 52,
+          "burst_time": 15,
+          "priority": 0,
+          "waiting_time": 1,
+          "turnaround_time": 16,
+          "response_time": 1,
+          "completion_time": 68,
+          "execution_history": [
+            [
+              53,
+              68
+            ]
+          ]
+        }
+      ]
+    },
+    "Round Robin": {
+      "metrics": {
+        "algorithm": "Round Robin (q=4)",
+        "avg_waiting_time": 133.4,
+        "avg_turnaround_time": 144.2,
+        "avg_response_time": 39.0,
+        "throughput": 0.09124087591240876,
+        "cpu_utilization": 0.9854014598540146,
+        "idle_cpu_time": 4,
+        "idle_cpu_percentage": 0.014598540145985401,
+        "context_switches": 73,
+        "fairness_index": 0.7832952738784198,
+        "starvation_score": 0.6341829085457271,
+        "energy_score": 489.0,
+        "cache_miss_rate": 0.8451824817518229,
+        "scheduling_efficiency_score": 47.23218572047299,
+        "total_time": 274,
+        "process_count": 25
+      },
+      "processes": [
+        {
+          "pid": 0,
+          "arrival_time": 4,
+          "burst_time": 16,
+          "priority": 2,
+          "waiting_time": 23,
+          "turnaround_time": 39,
+          "response_time": 0,
+          "completion_time": 43,
+          "execution_history": [
+            [
+              4,
+              8
+            ],
+            [
+              8,
+              12
+            ],
+            [
+              16,
+              20
+            ],
+            [
+              39,
+              43
+            ]
+          ]
+        },
+        {
+          "pid": 1,
+          "arrival_time": 9,
+          "burst_time": 5,
+          "priority": 1,
+          "waiting_time": 19,
+          "turnaround_time": 24,
+          "response_time": 3,
+          "completion_time": 33,
+          "execution_history": [
+            [
+              12,
+              16
+            ],
+            [
+              32,
+              33
+            ]
+          ]
+        },
+        {
+          "pid": 2,
+          "arrival_time": 14,
+          "burst_time": 8,
+          "priority": 1,
+          "waiting_time": 25,
+          "turnaround_time": 33,
+          "response_time": 6,
+          "completion_time": 47,
+          "execution_history": [
+            [
+              20,
+              24
+            ],
+            [
+              43,
+              47
+            ]
+          ]
+        },
+        {
+          "pid": 3,
+          "arrival_time": 14,
+          "burst_time": 10,
+          "priority": 2,
+          "waiting_time": 112,
+          "turnaround_time": 122,
+          "response_time": 10,
+          "completion_time": 136,
+          "execution_history": [
+            [
+              24,
+              28
+            ],
+            [
+              55,
+              59
+            ],
+            [
+              134,
+              136
+            ]
+          ]
+        },
+        {
+          "pid": 4,
+          "arrival_time": 14,
+          "burst_time": 11,
+          "priority": 3,
+          "waiting_time": 126,
+          "turnaround_time": 137,
+          "response_time": 14,
+          "completion_time": 151,
+          "execution_history": [
+            [
+              28,
+              32
+            ],
+            [
+              71,
+              75
+            ],
+            [
+              148,
+              151
+            ]
+          ]
+        },
+        {
+          "pid": 5,
+          "arrival_time": 17,
+          "burst_time": 2,
+          "priority": 4,
+          "waiting_time": 16,
+          "turnaround_time": 18,
+          "response_time": 16,
+          "completion_time": 35,
+          "execution_history": [
+            [
+              33,
+              35
+            ]
+          ]
+        },
+        {
+          "pid": 6,
+          "arrival_time": 20,
+          "burst_time": 12,
+          "priority": 2,
+          "waiting_time": 147,
+          "turnaround_time": 159,
+          "response_time": 15,
+          "completion_time": 179,
+          "execution_history": [
+            [
+              35,
+              39
+            ],
+            [
+              99,
+              103
+            ],
+            [
+              175,
+              179
+            ]
+          ]
+        },
+        {
+          "pid": 7,
+          "arrival_time": 26,
+          "burst_time": 4,
+          "priority": 0,
+          "waiting_time": 21,
+          "turnaround_time": 25,
+          "response_time": 21,
+          "completion_time": 51,
+          "execution_history": [
+            [
+              47,
+              51
+            ]
+          ]
+        },
+        {
+          "pid": 8,
+          "arrival_time": 27,
+          "burst_time": 16,
+          "priority": 4,
+          "waiting_time": 195,
+          "turnaround_time": 211,
+          "response_time": 24,
+          "completion_time": 238,
+          "execution_history": [
+            [
+              51,
+              55
+            ],
+            [
+              130,
+              134
+            ],
+            [
+              196,
+              200
+            ],
+            [
+              234,
+              238
+            ]
+          ]
+        },
+        {
+          "pid": 9,
+          "arrival_time": 29,
+          "burst_time": 14,
+          "priority": 3,
+          "waiting_time": 197,
+          "turnaround_time": 211,
+          "response_time": 30,
+          "completion_time": 240,
+          "execution_history": [
+            [
+              59,
+              63
+            ],
+            [
+              136,
+              140
+            ],
+            [
+              200,
+              204
+            ],
+            [
+              238,
+              240
+            ]
+          ]
+        },
+        {
+          "pid": 10,
+          "arrival_time": 29,
+          "burst_time": 19,
+          "priority": 3,
+          "waiting_time": 218,
+          "turnaround_time": 237,
+          "response_time": 34,
+          "completion_time": 266,
+          "execution_history": [
+            [
+              63,
+              67
+            ],
+            [
+              140,
+              144
+            ],
+            [
+              204,
+              208
+            ],
+            [
+              240,
+              244
+            ],
+            [
+              263,
+              266
+            ]
+          ]
+        },
+        {
+          "pid": 11,
+          "arrival_time": 31,
+          "burst_time": 16,
+          "priority": 0,
+          "waiting_time": 201,
+          "turnaround_time": 217,
+          "response_time": 36,
+          "completion_time": 248,
+          "execution_history": [
+            [
+              67,
+              71
+            ],
+            [
+              144,
+              148
+            ],
+            [
+              208,
+              212
+            ],
+            [
+              244,
+              248
+            ]
+          ]
+        },
+        {
+          "pid": 12,
+          "arrival_time": 34,
+          "burst_time": 8,
+          "priority": 1,
+          "waiting_time": 113,
+          "turnaround_time": 121,
+          "response_time": 41,
+          "completion_time": 155,
+          "execution_history": [
+            [
+              75,
+              79
+            ],
+            [
+              151,
+              155
+            ]
+          ]
+        },
+        {
+          "pid": 13,
+          "arrival_time": 35,
+          "burst_time": 20,
+          "priority": 3,
+          "waiting_time": 215,
+          "turnaround_time": 235,
+          "response_time": 44,
+          "completion_time": 270,
+          "execution_history": [
+            [
+              79,
+              83
+            ],
+            [
+              155,
+              159
+            ],
+            [
+              212,
+              216
+            ],
+            [
+              248,
+              252
+            ],
+            [
+              266,
+              270
+            ]
+          ]
+        },
+        {
+          "pid": 14,
+          "arrival_time": 38,
+          "burst_time": 9,
+          "priority": 4,
+          "waiting_time": 170,
+          "turnaround_time": 179,
+          "response_time": 45,
+          "completion_time": 217,
+          "execution_history": [
+            [
+              83,
+              87
+            ],
+            [
+              159,
+              163
+            ],
+            [
+              216,
+              217
+            ]
+          ]
+        },
+        {
+          "pid": 15,
+          "arrival_time": 38,
+          "burst_time": 8,
+          "priority": 2,
+          "waiting_time": 121,
+          "turnaround_time": 129,
+          "response_time": 49,
+          "completion_time": 167,
+          "execution_history": [
+            [
+              87,
+              91
+            ],
+            [
+              163,
+              167
+            ]
+          ]
+        },
+        {
+          "pid": 16,
+          "arrival_time": 38,
+          "burst_time": 19,
+          "priority": 4,
+          "waiting_time": 216,
+          "turnaround_time": 235,
+          "response_time": 53,
+          "completion_time": 273,
+          "execution_history": [
+            [
+              91,
+              95
+            ],
+            [
+              167,
+              171
+            ],
+            [
+              217,
+              221
+            ],
+            [
+              252,
+              256
+            ],
+            [
+              270,
+              273
+            ]
+          ]
+        },
+        {
+          "pid": 17,
+          "arrival_time": 39,
+          "burst_time": 9,
+          "priority": 4,
+          "waiting_time": 174,
+          "turnaround_time": 183,
+          "response_time": 56,
+          "completion_time": 222,
+          "execution_history": [
+            [
+              95,
+              99
+            ],
+            [
+              171,
+              175
+            ],
+            [
+              221,
+              222
+            ]
+          ]
+        },
+        {
+          "pid": 18,
+          "arrival_time": 41,
+          "burst_time": 3,
+          "priority": 1,
+          "waiting_time": 62,
+          "turnaround_time": 65,
+          "response_time": 62,
+          "completion_time": 106,
+          "execution_history": [
+            [
+              103,
+              106
+            ]
+          ]
+        },
+        {
+          "pid": 19,
+          "arrival_time": 41,
+          "burst_time": 10,
+          "priority": 4,
+          "waiting_time": 173,
+          "turnaround_time": 183,
+          "response_time": 65,
+          "completion_time": 224,
+          "execution_history": [
+            [
+              106,
+              110
+            ],
+            [
+              179,
+              183
+            ],
+            [
+              222,
+              224
+            ]
+          ]
+        },
+        {
+          "pid": 20,
+          "arrival_time": 44,
+          "burst_time": 17,
+          "priority": 1,
+          "waiting_time": 213,
+          "turnaround_time": 230,
+          "response_time": 66,
+          "completion_time": 274,
+          "execution_history": [
+            [
+              110,
+              114
+            ],
+            [
+              183,
+              187
+            ],
+            [
+              224,
+              228
+            ],
+            [
+              256,
+              260
+            ],
+            [
+              273,
+              274
+            ]
+          ]
+        },
+        {
+          "pid": 21,
+          "arrival_time": 44,
+          "burst_time": 5,
+          "priority": 1,
+          "waiting_time": 139,
+          "turnaround_time": 144,
+          "response_time": 70,
+          "completion_time": 188,
+          "execution_history": [
+            [
+              114,
+              118
+            ],
+            [
+              187,
+              188
+            ]
+          ]
+        },
+        {
+          "pid": 22,
+          "arrival_time": 48,
+          "burst_time": 10,
+          "priority": 3,
+          "waiting_time": 172,
+          "turnaround_time": 182,
+          "response_time": 70,
+          "completion_time": 230,
+          "execution_history": [
+            [
+              118,
+              122
+            ],
+            [
+              188,
+              192
+            ],
+            [
+              228,
+              230
+            ]
+          ]
+        },
+        {
+          "pid": 23,
+          "arrival_time": 51,
+          "burst_time": 4,
+          "priority": 3,
+          "waiting_time": 71,
+          "turnaround_time": 75,
+          "response_time": 71,
+          "completion_time": 126,
+          "execution_history": [
+            [
+              122,
+              126
+            ]
+          ]
+        },
+        {
+          "pid": 24,
+          "arrival_time": 52,
+          "burst_time": 15,
+          "priority": 0,
+          "waiting_time": 196,
+          "turnaround_time": 211,
+          "response_time": 74,
+          "completion_time": 263,
+          "execution_history": [
+            [
+              126,
+              130
+            ],
+            [
+              192,
+              196
+            ],
+            [
+              230,
+              234
+            ],
+            [
+              260,
+              263
+            ]
+          ]
+        }
+      ]
+    }
+  }
+}</script>
+
+<script>
+/* ============================================================
+   CPU SCHEDULING SIMULATOR — DASHBOARD LOGIC
+   Renders real simulation output. The JS scheduling engine below
+   mirrors the Python algorithms exactly (same tie-break rules,
+   same tick-based semantics) so client-side "Generate & Simulate"
+   produces genuinely correct schedules, not mocked data.
+   ============================================================ */
+
+const PALETTE = ['#00d9ff','#b14eff','#3dffa0','#ffb020','#ff4d6d','#5eead4','#f472b6','#a3e635','#60a5fa','#fb923c','#c084fc','#34d399'];
+function colorForPid(pid) { return PALETTE[pid % PALETTE.length]; }
+
+const CFG = { switchCachePenalty: 0.15, cacheDecay: 0.02, idleCacheDecay: 0.01, energyPerBusyTick: 1.0, energyPerSwitch: 3.0 };
+
+/* ---------------- seeded PRNG (mulberry32) ---------------- */
+function mulberry32(seed) {
+  return function() {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* ---------------- workload generation (mirrors process_generator.py) ---------------- */
+function generateWorkloadJS(n, seed, arrivalRate, burstMin, burstMax) {
+  const rng = mulberry32(seed);
+  const processes = [];
+  let t = 0;
+  for (let i = 0; i < n; i++) {
+    const interArrival = -Math.log(1 - rng()) / arrivalRate;
+    t += interArrival;
+    const burst = burstMin + Math.floor(rng() * (burstMax - burstMin + 1));
+    const priority = Math.floor(rng() * 5);
+    processes.push(makeProcess(i, Math.floor(t), Math.max(1, burst), priority));
+  }
+  return processes;
+}
+
+function makeProcess(pid, arrival, burst, priority) {
+  return { pid, arrival_time: arrival, burst_time: burst, priority: priority,
+           remaining_time: burst, waiting_time: 0, turnaround_time: 0, response_time: null,
+           completion_time: null, started: false, execution_history: [] };
+}
+
+function resetRuntime(p) {
+  p.remaining_time = p.burst_time; p.waiting_time = 0; p.turnaround_time = 0;
+  p.response_time = null; p.completion_time = null; p.started = false; p.execution_history = [];
+}
+
+function cloneWorkload(workload) { return workload.map(p => ({...p})); }
+function isComplete(p) { return p.remaining_time <= 0; }
+function readyQueue(procs, t) { return procs.filter(p => p.arrival_time <= t && !isComplete(p)); }
+
+/* ---------------- cache-miss tracker (mirrors CacheMissTracker) ---------------- */
+function makeCacheTracker() { return { rate: 0.05, sum: 0, samples: 0 }; }
+function cacheOnSwitch(c) { c.rate = Math.min(1, c.rate + CFG.switchCachePenalty); }
+function cacheOnBusy(c) { c.rate = Math.max(0, c.rate - CFG.cacheDecay); c.sum += c.rate; c.samples++; }
+function cacheOnIdle(c) { c.rate = Math.max(0, c.rate - CFG.idleCacheDecay); c.sum += c.rate; c.samples++; }
+function cacheAverage(c) { return c.samples ? c.sum / c.samples : 0; }
+
+/* ---------------- algorithms (mirror the Python implementations exactly) ---------------- */
+function simFCFS(workload) {
+  const procs = cloneWorkload(workload); procs.forEach(resetRuntime);
+  let t = 0, switches = 0, idle = 0, lastPid = null, completed = 0;
+  const n = procs.length; const cache = makeCacheTracker();
+  while (completed < n) {
+    const ready = readyQueue(procs, t).sort((a,b) => a.arrival_time - b.arrival_time || a.pid - b.pid);
+    if (!ready.length) { t++; idle++; cacheOnIdle(cache); continue; }
+    const cur = ready[0];
+    if (lastPid !== null && lastPid !== cur.pid) { switches++; cacheOnSwitch(cache); }
+    lastPid = cur.pid;
+    if (!cur.started) { cur.response_time = t - cur.arrival_time; cur.started = true; }
+    const start = t;
+    while (cur.remaining_time > 0) { cur.remaining_time--; t++; cacheOnBusy(cache); }
+    cur.execution_history.push([start, t]);
+    cur.completion_time = t; cur.turnaround_time = t - cur.arrival_time; cur.waiting_time = cur.turnaround_time - cur.burst_time;
+    completed++;
+  }
+  return { name: "FCFS", processes: procs, total_time: t, context_switches: switches, idle_ticks: idle, cache_miss_rate: cacheAverage(cache) };
+}
+
+function simSJF(workload) {
+  const procs = cloneWorkload(workload); procs.forEach(resetRuntime);
+  let t = 0, switches = 0, idle = 0, lastPid = null, completed = 0;
+  const n = procs.length; const cache = makeCacheTracker();
+  while (completed < n) {
+    const ready = readyQueue(procs, t);
+    if (!ready.length) { t++; idle++; cacheOnIdle(cache); continue; }
+    ready.sort((a,b) => a.burst_time - b.burst_time || a.arrival_time - b.arrival_time || a.pid - b.pid);
+    const cur = ready[0];
+    if (lastPid !== null && lastPid !== cur.pid) { switches++; cacheOnSwitch(cache); }
+    lastPid = cur.pid;
+    if (!cur.started) { cur.response_time = t - cur.arrival_time; cur.started = true; }
+    const start = t;
+    while (cur.remaining_time > 0) { cur.remaining_time--; t++; cacheOnBusy(cache); }
+    cur.execution_history.push([start, t]);
+    cur.completion_time = t; cur.turnaround_time = t - cur.arrival_time; cur.waiting_time = cur.turnaround_time - cur.burst_time;
+    completed++;
+  }
+  return { name: "SJF", processes: procs, total_time: t, context_switches: switches, idle_ticks: idle, cache_miss_rate: cacheAverage(cache) };
+}
+
+function simPriority(workload) {
+  const procs = cloneWorkload(workload); procs.forEach(resetRuntime);
+  let t = 0, switches = 0, idle = 0, lastPid = null, completed = 0;
+  const n = procs.length; const cache = makeCacheTracker();
+  while (completed < n) {
+    const ready = readyQueue(procs, t);
+    if (!ready.length) { t++; idle++; cacheOnIdle(cache); continue; }
+    ready.sort((a,b) => a.priority - b.priority || a.arrival_time - b.arrival_time || a.pid - b.pid);
+    const cur = ready[0];
+    if (lastPid !== null && lastPid !== cur.pid) { switches++; cacheOnSwitch(cache); }
+    lastPid = cur.pid;
+    if (!cur.started) { cur.response_time = t - cur.arrival_time; cur.started = true; }
+    const start = t;
+    while (cur.remaining_time > 0) { cur.remaining_time--; t++; cacheOnBusy(cache); }
+    cur.execution_history.push([start, t]);
+    cur.completion_time = t; cur.turnaround_time = t - cur.arrival_time; cur.waiting_time = cur.turnaround_time - cur.burst_time;
+    completed++;
+  }
+  return { name: "Priority", processes: procs, total_time: t, context_switches: switches, idle_ticks: idle, cache_miss_rate: cacheAverage(cache) };
+}
+
+function simRoundRobin(workload, quantum) {
+  const procs = cloneWorkload(workload); procs.forEach(resetRuntime);
+  const n = procs.length;
+  const byArrival = procs.slice().sort((a,b) => a.arrival_time - b.arrival_time || a.pid - b.pid);
+  let t = 0, completed = 0, switches = 0, idle = 0, lastPid = null;
+  const cache = makeCacheTracker();
+  const queue = []; let arrivalPtr = 0;
+  function admit(curTime) {
+    while (arrivalPtr < n && byArrival[arrivalPtr].arrival_time <= curTime) { queue.push(byArrival[arrivalPtr]); arrivalPtr++; }
+  }
+  admit(t);
+  while (completed < n) {
+    if (!queue.length) { t++; idle++; cacheOnIdle(cache); admit(t); continue; }
+    const cur = queue.shift();
+    if (lastPid !== null && lastPid !== cur.pid) { switches++; cacheOnSwitch(cache); }
+    lastPid = cur.pid;
+    if (!cur.started) { cur.response_time = t - cur.arrival_time; cur.started = true; }
+    const runFor = Math.min(quantum, cur.remaining_time);
+    const start = t;
+    for (let i = 0; i < runFor; i++) { t++; cur.remaining_time--; cacheOnBusy(cache); admit(t); }
+    cur.execution_history.push([start, t]);
+    if (cur.remaining_time > 0) { queue.push(cur); }
+    else { cur.completion_time = t; cur.turnaround_time = t - cur.arrival_time; cur.waiting_time = cur.turnaround_time - cur.burst_time; completed++; }
+  }
+  return { name: `Round Robin (q=${quantum})`, processes: procs, total_time: t, context_switches: switches, idle_ticks: idle, cache_miss_rate: cacheAverage(cache) };
+}
+
+/* ---------------- metrics (mirrors metrics/calculator.py) ---------------- */
+function jainsFairness(values) {
+  const n = values.length;
+  const sumSq = values.reduce((a,v) => a + v*v, 0);
+  if (n === 0 || sumSq === 0) return 1.0;
+  const sum = values.reduce((a,v) => a+v, 0);
+  return (sum*sum) / (n * sumSq);
+}
+function starvationScore(values) {
+  if (!values.length) return 0;
+  const mean = values.reduce((a,v)=>a+v,0) / values.length;
+  if (mean === 0) return 0;
+  return (Math.max(...values) - mean) / mean;
+}
+function efficiencyScore(cpuUtil, fairness, starvation) { return 100 * cpuUtil * fairness / (1 + starvation); }
+
+function computeMetricsJS(result) {
+  const procs = result.processes; const n = procs.length;
+  if (n === 0) {
+    return { algorithm: result.name, avg_waiting_time: 0, avg_turnaround_time: 0, avg_response_time: 0,
+      throughput: 0, cpu_utilization: 0, idle_cpu_time: 0, idle_cpu_percentage: 0, context_switches: 0,
+      fairness_index: 1, starvation_score: 0, energy_score: 0, cache_miss_rate: 0,
+      scheduling_efficiency_score: 0, total_time: 0, process_count: 0 };
+  }
+  const waits = procs.map(p => p.waiting_time);
+  const tats = procs.map(p => p.turnaround_time);
+  const resps = procs.map(p => p.response_time);
+  const busy = procs.reduce((a,p) => a + p.burst_time, 0);
+  const total = result.total_time;
+  const cpuUtil = total > 0 ? busy / total : 0;
+  const idlePct = total > 0 ? result.idle_ticks / total : 0;
+  const fairness = jainsFairness(waits);
+  const starvation = starvationScore(waits);
+  const energy = busy * CFG.energyPerBusyTick + result.context_switches * CFG.energyPerSwitch;
+
+  return {
+    algorithm: result.name,
+    avg_waiting_time: waits.reduce((a,v)=>a+v,0) / n,
+    avg_turnaround_time: tats.reduce((a,v)=>a+v,0) / n,
+    avg_response_time: resps.reduce((a,v)=>a+v,0) / n,
+    throughput: total > 0 ? n / total : 0,
+    cpu_utilization: cpuUtil,
+    idle_cpu_time: result.idle_ticks,
+    idle_cpu_percentage: idlePct,
+    context_switches: result.context_switches,
+    fairness_index: fairness,
+    starvation_score: starvation,
+    energy_score: energy,
+    cache_miss_rate: result.cache_miss_rate,
+    scheduling_efficiency_score: efficiencyScore(cpuUtil, fairness, starvation),
+    total_time: total,
+    process_count: n,
+  };
+}
+
+function runFullBenchmarkJS(workload, quantum) {
+  const results = { "FCFS": simFCFS(workload), "SJF": simSJF(workload), "Priority": simPriority(workload),
+                     "Round Robin": simRoundRobin(workload, quantum) };
+  const algorithms = {};
+  for (const [name, result] of Object.entries(results)) {
+    algorithms[name] = { metrics: computeMetricsJS(result), processes: result.processes.map(p => ({
+      pid: p.pid, arrival_time: p.arrival_time, burst_time: p.burst_time, priority: p.priority,
+      waiting_time: p.waiting_time, turnaround_time: p.turnaround_time, response_time: p.response_time,
+      completion_time: p.completion_time, execution_history: p.execution_history,
+    })) };
+  }
+  return { meta: { n_processes: workload.length, source: "browser-generated", quantum }, algorithms };
+}
+
+/* ================================================================
+   RENDERING (shared regardless of whether DATA came from Python
+   export or the in-browser engine above — same shape, same code path)
+   ================================================================ */
+
+let DATA = JSON.parse(document.getElementById('dashboard-data-json').textContent);
+
+const state = { algo: null, view: 'replay', tick: 0, maxTick: 0, playing: false, speed: 2, lastFrameTime: 0 };
+
+function algoKeys() { return Object.keys(DATA.algorithms); }
+
+function deriveState(proc, t) {
+  if (proc.arrival_time > t) return 'new';
+  if (proc.completion_time !== null && proc.completion_time <= t) return 'terminated';
+  for (const [s, e] of proc.execution_history) { if (t >= s && t < e) return 'running'; }
+  return 'ready';
+}
+
+function renderTabs() {
+  const wrap = document.getElementById('algo-tabs'); wrap.innerHTML = '';
+  algoKeys().forEach((name, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'algo-tab' + (name === state.algo ? ' active' : '');
+    btn.innerHTML = `<span class="swatch" style="background:${PALETTE[i % PALETTE.length]}"></span>${name}`;
+    btn.onclick = () => { state.algo = name; setTick(0); renderReplay(); };
+    wrap.appendChild(btn);
+  });
+}
+
+function renderGantt() {
+  const algo = DATA.algorithms[state.algo];
+  const totalTime = algo.metrics.total_time;
+  state.maxTick = totalTime;
+  document.getElementById('gantt-subtitle').textContent = `${algo.metrics.algorithm} · makespan ${totalTime} ticks`;
+  const track = document.getElementById('gantt-track');
+  track.querySelectorAll('.gantt-seg').forEach(el => el.remove());
+
+  algo.processes.forEach(proc => {
+    proc.execution_history.forEach(([s, e]) => {
+      const seg = document.createElement('div');
+      seg.className = 'gantt-seg';
+      seg.style.left = (totalTime ? s / totalTime * 100 : 0) + '%';
+      seg.style.width = Math.max(totalTime ? (e - s) / totalTime * 100 : 0, 0.3) + '%';
+      seg.style.background = colorForPid(proc.pid);
+      if (totalTime && (e - s) / totalTime > 0.02) seg.textContent = 'P' + proc.pid;
+      seg.title = `P${proc.pid}  [${s} \u2192 ${e}]`;
+      seg.onclick = () => openInspector(proc);
+      track.appendChild(seg);
+    });
+  });
+
+  const ruler = document.getElementById('gantt-ruler'); ruler.innerHTML = '';
+  for (let i = 0; i <= 8; i++) {
+    const s = document.createElement('span'); s.textContent = Math.round(totalTime * i / 8); ruler.appendChild(s);
+  }
+  document.getElementById('scrubber').max = totalTime;
+  updatePlayhead();
+}
+
+function updatePlayhead() {
+  const totalTime = state.maxTick || 1;
+  document.getElementById('gantt-playhead').style.left = (state.tick / totalTime * 100) + '%';
+  document.getElementById('clock-readout').textContent = 't = ' + state.tick;
+  document.getElementById('tick-readout').textContent = `tick ${state.tick} / ${totalTime}`;
+  document.getElementById('scrubber').value = state.tick;
+}
+
+function renderLanes() {
+  const algo = DATA.algorithms[state.algo];
+  const lanes = { new: [], ready: [], running: [], terminated: [] };
+  algo.processes.forEach(proc => { lanes[deriveState(proc, state.tick)].push(proc); });
+  ['new','ready','running','terminated'].forEach(key => {
+    document.getElementById('count-' + key).textContent = lanes[key].length;
+    const grid = document.getElementById('lane-' + key); grid.innerHTML = '';
+    lanes[key].forEach(proc => {
+      const chip = document.createElement('div'); chip.className = 'chip';
+      chip.style.background = colorForPid(proc.pid); chip.textContent = proc.pid;
+      chip.title = `P${proc.pid} — ${key.toUpperCase()}`;
+      chip.onclick = () => openInspector(proc);
+      grid.appendChild(chip);
+    });
+  });
+}
+
+function metricCard(label, value, unit, accentClass) {
+  return `<div class="metric-card"><div class="metric-label">${label}</div><div class="metric-value ${accentClass||''}">${value}<span class="metric-unit">${unit||''}</span></div></div>`;
+}
+
+function drawGauge(svgId, pct, color) {
+  const svg = document.getElementById(svgId);
+  const cx = 70, cy = 78, r = 55;
+  const startAngle = Math.PI, endAngle = 0;
+  const angle = Math.PI - Math.max(0, Math.min(1, pct)) * Math.PI;
+  const x1 = cx + r * Math.cos(startAngle), y1 = cy + r * Math.sin(startAngle);
+  const x2 = cx + r * Math.cos(endAngle), y2 = cy + r * Math.sin(endAngle);
+  const xv = cx + r * Math.cos(angle), yv = cy + r * Math.sin(angle);
+  const largeArc = pct > 0.5 ? 1 : 0;
+  svg.innerHTML = `
+    <path d="M ${x1} ${y1} A ${r} ${r} 0 1 1 ${x2} ${y2}" fill="none" stroke="#232b3a" stroke-width="12" stroke-linecap="round"/>
+    <path d="M ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${xv} ${yv}" fill="none" stroke="${color}" stroke-width="12" stroke-linecap="round"/>
+    <text x="${cx}" y="${cy-6}" text-anchor="middle" fill="#e9edf3" font-family="JetBrains Mono" font-size="18" font-weight="700">${(pct*100).toFixed(0)}%</text>
+  `;
+}
+
+function renderMetrics() {
+  const algo = DATA.algorithms[state.algo]; const m = algo.metrics; const t = state.tick;
+  const completedSoFar = algo.processes.filter(p => p.completion_time !== null && p.completion_time <= t).length;
+  const runningNow = algo.processes.filter(p => deriveState(p, t) === 'running').length;
+  const readyNow = algo.processes.filter(p => deriveState(p, t) === 'ready').length;
+  const switchesSoFar = algo.processes.reduce((acc, p) => acc + p.execution_history.filter(([s]) => s <= t).length, 0);
+  const cpuUtilSoFar = t > 0 ? Math.min(1, algo.processes.reduce((acc,p) => acc + p.execution_history.reduce((a,[s,e])=>a+(Math.min(e,t)-Math.min(s,t)),0), 0) / t) : 0;
+
+  document.getElementById('metrics-live').innerHTML = [
+    metricCard('Ready Queue', readyNow, ' procs', 'accent-cyan'),
+    metricCard('Running', runningNow, ' proc', 'accent-violet'),
+    metricCard('Completed', completedSoFar + '/' + m.process_count, '', 'accent-green'),
+    metricCard('Context Switches', switchesSoFar, ' so far'),
+    metricCard('CPU Utilization', (cpuUtilSoFar*100).toFixed(1), '%'),
+    metricCard('Sim Clock', t, ' ticks'),
+  ].join('');
+
+  document.getElementById('metrics-final').innerHTML = [
+    metricCard('Avg Waiting Time', m.avg_waiting_time.toFixed(1), ' ticks'),
+    metricCard('Avg Turnaround', m.avg_turnaround_time.toFixed(1), ' ticks'),
+    metricCard('Avg Response', m.avg_response_time.toFixed(1), ' ticks'),
+    metricCard('Throughput', m.throughput.toFixed(4), ' proc/tick'),
+    metricCard('Fairness Index', m.fairness_index.toFixed(3), '', 'accent-green'),
+    metricCard('Starvation Score', m.starvation_score.toFixed(2), '', m.starvation_score > 1.5 ? 'accent-amber' : ''),
+    metricCard('Idle CPU Time', m.idle_cpu_time, ' ticks'),
+    metricCard('Context Switches', m.context_switches, ' total'),
+    metricCard('Efficiency Score', m.scheduling_efficiency_score.toFixed(1), ' / 100', 'accent-violet'),
+    metricCard('Energy Score', m.energy_score.toFixed(0), ' units (sim)'),
+    metricCard('Cache Miss Rate', (m.cache_miss_rate*100).toFixed(1), '% (sim)'),
+    metricCard('CPU Utilization', (m.cpu_utilization*100).toFixed(1), '%'),
+  ].join('');
+
+  drawGauge('gauge-cpu', m.cpu_utilization, m.cpu_utilization > 0.7 ? '#3dffa0' : (m.cpu_utilization > 0.4 ? '#ffb020' : '#ff4d6d'));
+  drawGauge('gauge-idle', m.idle_cpu_percentage, '#00d9ff');
+  drawGauge('gauge-efficiency', Math.min(1, m.scheduling_efficiency_score / 100), '#b14eff');
+}
+
+function renderTable() {
+  const algo = DATA.algorithms[state.algo];
+  const body = document.getElementById('process-table-body'); body.innerHTML = '';
+  algo.processes.slice().sort((a,b)=>a.pid-b.pid).forEach(proc => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><span class="pid-swatch" style="background:${colorForPid(proc.pid)}"></span>P${proc.pid}</td>
+      <td>${proc.arrival_time}</td><td>${proc.burst_time}</td><td>${proc.priority}</td>
+      <td>${proc.waiting_time}</td><td>${proc.turnaround_time}</td><td>${proc.response_time}</td><td>${proc.completion_time}</td>`;
+    tr.onclick = () => openInspector(proc);
+    body.appendChild(tr);
+  });
+}
+
+function openInspector(proc) {
+  document.getElementById('modal-swatch').style.background = colorForPid(proc.pid);
+  document.getElementById('modal-title-text').textContent = `Process P${proc.pid}`;
+  const fields = [
+    ['Arrival Time', proc.arrival_time], ['Burst Time', proc.burst_time], ['Priority', proc.priority],
+    ['Waiting Time', proc.waiting_time], ['Turnaround Time', proc.turnaround_time],
+    ['Response Time', proc.response_time], ['Completion Time', proc.completion_time],
+    ['State @ current tick', deriveState(proc, state.tick).toUpperCase()],
+  ];
+  document.getElementById('modal-grid').innerHTML = fields.map(([k,v]) => `<div class="modal-field"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+  const totalTime = DATA.algorithms[state.algo].metrics.total_time || 1;
+  const tl = document.getElementById('modal-timeline'); tl.innerHTML = '';
+  proc.execution_history.forEach(([s,e]) => {
+    const seg = document.createElement('div'); seg.className = 'mini-seg';
+    seg.style.left = (s/totalTime*100) + '%'; seg.style.width = Math.max((e-s)/totalTime*100, 0.5) + '%';
+    seg.style.background = colorForPid(proc.pid); tl.appendChild(seg);
+  });
+  document.getElementById('modal-backdrop').classList.add('open');
+}
+document.getElementById('modal-close').onclick = () => document.getElementById('modal-backdrop').classList.remove('open');
+document.getElementById('modal-backdrop').onclick = (e) => { if (e.target.id === 'modal-backdrop') e.currentTarget.classList.remove('open'); };
+
+function setTick(t) {
+  state.tick = Math.max(0, Math.min(state.maxTick, t));
+  updatePlayhead(); renderLanes(); renderMetrics();
+}
+document.getElementById('scrubber').addEventListener('input', (e) => { state.playing = false; updatePlayButton(); setTick(parseInt(e.target.value)); });
+document.getElementById('btn-reset').onclick = () => { state.playing = false; updatePlayButton(); setTick(0); };
+document.getElementById('btn-step').onclick = () => { state.playing = false; updatePlayButton(); setTick(state.tick + 1); };
+document.getElementById('speed-select').onchange = (e) => { state.speed = parseFloat(e.target.value); };
+function updatePlayButton() { document.getElementById('btn-play').textContent = state.playing ? '\u23F8' : '\u25B6'; }
+document.getElementById('btn-play').onclick = () => {
+  state.playing = !state.playing; updatePlayButton();
+  if (state.playing) { if (state.tick >= state.maxTick) state.tick = 0; state.lastFrameTime = performance.now(); requestAnimationFrame(playLoop); }
+};
+function playLoop(now) {
+  if (!state.playing) return;
+  const dt = (now - state.lastFrameTime) / 1000; state.lastFrameTime = now;
+  const next = state.tick + dt * 30 * state.speed;
+  if (next >= state.maxTick) { setTick(state.maxTick); state.playing = false; updatePlayButton(); return; }
+  setTick(Math.floor(next)); requestAnimationFrame(playLoop);
+}
+
+/* ---------------- compare view ---------------- */
+let barChart=null, radarChart=null, pieThroughputChart=null, pieSwitchesChart=null;
+function renderCompare() {
+  const keys = algoKeys(); const metrics = keys.map(k => DATA.algorithms[k].metrics);
+
+  if (barChart) barChart.destroy();
+  barChart = new Chart(document.getElementById('chart-bar').getContext('2d'), {
+    type: 'bar', data: { labels: keys, datasets: [{ label: 'Avg Waiting Time', data: metrics.map(m=>m.avg_waiting_time),
+      backgroundColor: keys.map((_,i)=>PALETTE[i%PALETTE.length]+'CC'), borderRadius: 4 }] },
+    options: { responsive: true, plugins: { legend: { display: false } },
+      scales: { x: { ticks: { color: '#7e8a9c', font: { family: 'JetBrains Mono', size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                y: { ticks: { color: '#7e8a9c', font: { family: 'JetBrains Mono', size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
+  });
+
+  const radarFields = ['avg_waiting_time','avg_turnaround_time','context_switches','starvation_score','energy_score','cache_miss_rate'];
+  const radarLabels = ['Wait','Turnaround','Switches','Starvation','Energy','Cache Miss'];
+  const maxByMetric = radarFields.map(f => Math.max(...metrics.map(m=>m[f])) || 1);
+  if (radarChart) radarChart.destroy();
+  radarChart = new Chart(document.getElementById('chart-radar').getContext('2d'), {
+    type: 'radar', data: { labels: radarLabels, datasets: keys.map((k,i) => ({ label: k,
+      data: radarFields.map((f,j) => metrics[i][f]/maxByMetric[j]), borderColor: PALETTE[i%PALETTE.length],
+      backgroundColor: 'transparent', pointBackgroundColor: PALETTE[i%PALETTE.length] })) },
+    options: { responsive: true, plugins: { legend: { labels: { color: '#e9edf3', font: { family:'Inter', size:10 } } } },
+      scales: { r: { angleLines: { color: 'rgba(255,255,255,0.08)' }, grid: { color: 'rgba(255,255,255,0.08)' },
+        pointLabels: { color: '#7e8a9c', font: { family:'JetBrains Mono', size:10 } }, ticks: { display:false }, suggestedMin:0, suggestedMax:1 } } }
+  });
+
+  if (pieThroughputChart) pieThroughputChart.destroy();
+  pieThroughputChart = new Chart(document.getElementById('chart-pie-throughput').getContext('2d'), {
+    type: 'pie', data: { labels: keys, datasets: [{ data: metrics.map(m=>m.throughput), backgroundColor: keys.map((_,i)=>PALETTE[i%PALETTE.length]) }] },
+    options: { plugins: { legend: { labels: { color:'#e9edf3', font:{size:10} } }, title: { display:true, text:'Throughput Share', color:'#e9edf3' } } }
+  });
+  if (pieSwitchesChart) pieSwitchesChart.destroy();
+  pieSwitchesChart = new Chart(document.getElementById('chart-pie-switches').getContext('2d'), {
+    type: 'pie', data: { labels: keys, datasets: [{ data: metrics.map(m=>m.context_switches), backgroundColor: keys.map((_,i)=>PALETTE[i%PALETTE.length]) }] },
+    options: { plugins: { legend: { labels: { color:'#e9edf3', font:{size:10} } }, title: { display:true, text:'Context Switch Share', color:'#e9edf3' } } }
+  });
+
+  renderHeatmap(keys, metrics); renderCompareTable(keys, metrics);
+}
+
+function heatColor(value, min, max, invert) {
+  let pct = max === min ? 0.5 : (value - min) / (max - min);
+  if (invert) pct = 1 - pct;
+  return `hsla(${pct*120}, 70%, 45%, 0.35)`;
+}
+function renderHeatmap(keys, metrics) {
+  const cols = [['avg_waiting_time','Avg Wait',true],['avg_turnaround_time','Avg TAT',true],['avg_response_time','Avg Resp',true],
+    ['fairness_index','Fairness',false],['starvation_score','Starvation',true],['context_switches','Switches',true],
+    ['cpu_utilization','CPU Util',false],['scheduling_efficiency_score','Efficiency',false]];
+  const table = document.getElementById('heatmap');
+  let html = '<thead><tr><th>Algorithm</th>' + cols.map(c=>`<th>${c[1]}</th>`).join('') + '</tr></thead><tbody>';
+  keys.forEach((k,i) => {
+    html += `<tr><td>${k}</td>`;
+    cols.forEach(([field,label,invert]) => {
+      const vals = metrics.map(m=>m[field]); const min=Math.min(...vals), max=Math.max(...vals);
+      const bg = heatColor(metrics[i][field], min, max, invert);
+      const raw = metrics[i][field];
+      const display = (field==='fairness_index'||field==='cpu_utilization') ? (raw*100).toFixed(1)+'%' : raw.toFixed(field.includes('score')?1:2);
+      html += `<td style="background:${bg}">${display}</td>`;
+    });
+    html += '</tr>';
+  });
+  table.innerHTML = html + '</tbody>';
+}
+function renderCompareTable(keys, metrics) {
+  const cols = ['avg_waiting_time','avg_turnaround_time','avg_response_time','throughput','cpu_utilization','idle_cpu_percentage',
+                'fairness_index','starvation_score','context_switches','scheduling_efficiency_score','energy_score','cache_miss_rate','total_time'];
+  const table = document.getElementById('compare-table');
+  let html = '<thead><tr><th>Algorithm</th>' + cols.map(c=>`<th>${c.replace(/_/g,' ')}</th>`).join('') + '</tr></thead><tbody>';
+  keys.forEach((k,i) => { html += `<tr><td>${k}</td>` + cols.map(c => { const v = metrics[i][c];
+    return `<td>${typeof v==='number' ? (Number.isInteger(v)?v:v.toFixed(3)) : v}</td>`; }).join('') + '</tr>'; });
+  table.innerHTML = html + '</tbody>';
+}
+
+/* ---------------- sidebar navigation ---------------- */
+const pageTitles = { replay: 'Live Replay', compare: 'Compare Algorithms', workload: 'Workload Setup' };
+document.querySelectorAll('.nav-item[data-view]').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.nav-item[data-view]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('view-' + btn.dataset.view).classList.add('active');
+    document.getElementById('page-title').textContent = pageTitles[btn.dataset.view];
+    if (btn.dataset.view === 'compare') renderCompare();
+  };
+});
+
+/* ---------------- workload tabs ---------------- */
+document.querySelectorAll('.workload-tab').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.workload-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('wtab-random').style.display = btn.dataset.wtab === 'random' ? 'block' : 'none';
+    document.getElementById('wtab-custom').style.display = btn.dataset.wtab === 'custom' ? 'block' : 'none';
+  };
+});
+
+document.getElementById('btn-generate-random').onclick = () => {
+  const n = parseInt(document.getElementById('wf-n').value);
+  const seed = parseInt(document.getElementById('wf-seed').value);
+  const rate = parseFloat(document.getElementById('wf-rate').value);
+  const bMin = parseInt(document.getElementById('wf-burst-min').value);
+  const bMax = parseInt(document.getElementById('wf-burst-max').value);
+  const quantum = Math.max(1, parseInt(document.getElementById('wf-quantum').value) || 4);
+  if (isNaN(n) || n < 0) { alert('Process count must be a non-negative number.'); return; }
+  const workload = generateWorkloadJS(n, seed, rate, Math.min(bMin,bMax), Math.max(bMin,bMax));
+  DATA = runFullBenchmarkJS(workload, quantum);
+  loadNewData();
+  document.querySelector('.nav-item[data-view="replay"]').click();
+};
+
+/* ---------------- custom process input table ---------------- */
+let customRowId = 0;
+function addCustomRow(arrival=0, burst=5, priority=0) {
+  const tbody = document.getElementById('custom-table-body');
+  const rowId = customRowId++;
+  const tr = document.createElement('tr'); tr.dataset.rowId = rowId;
+  tr.innerHTML = `<td>P${rowId}</td>
+    <td><input type="number" min="0" value="${arrival}" class="c-arrival"></td>
+    <td><input type="number" min="1" value="${burst}" class="c-burst"></td>
+    <td><input type="number" min="0" value="${priority}" class="c-priority"></td>
+    <td><button class="row-remove" title="Remove">&#10005;</button></td>`;
+  tr.querySelector('.row-remove').onclick = () => tr.remove();
+  tbody.appendChild(tr);
+}
+document.getElementById('btn-add-row').onclick = () => addCustomRow(0, 5, 0);
+[[0,6,1],[1,4,2],[2,9,0],[4,2,3]].forEach(([a,b,p]) => addCustomRow(a,b,p));
+
+document.getElementById('btn-simulate-custom').onclick = () => {
+  const rows = document.querySelectorAll('#custom-table-body tr');
+  const msg = document.getElementById('custom-validation'); msg.textContent = '';
+  if (rows.length === 0) { msg.textContent = 'Add at least one process.'; return; }
+
+  const records = [];
+  for (const row of rows) {
+    const arrival = parseFloat(row.querySelector('.c-arrival').value);
+    const burst = parseFloat(row.querySelector('.c-burst').value);
+    const priority = parseFloat(row.querySelector('.c-priority').value);
+    if (isNaN(arrival) || arrival < 0) { msg.textContent = 'Arrival time must be >= 0 for every process.'; return; }
+    if (isNaN(burst) || burst <= 0) { msg.textContent = 'Burst time must be > 0 for every process.'; return; }
+    if (isNaN(priority)) { msg.textContent = 'Priority must be numeric for every process.'; return; }
+    records.push({ arrival_time: Math.floor(arrival), burst_time: Math.floor(burst), priority: Math.floor(priority) });
+  }
+  const workload = records.map((r,i) => makeProcess(i, r.arrival_time, r.burst_time, r.priority));
+  const quantum = Math.max(1, parseInt(document.getElementById('wf-quantum-custom').value) || 4);
+  DATA = runFullBenchmarkJS(workload, quantum);
+  loadNewData();
+  document.querySelector('.nav-item[data-view="replay"]').click();
+};
+
+/* ---------------- export ---------------- */
+function download(filename, content, mime) {
+  const blob = new Blob([content], { type: mime }); const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url);
+}
+document.getElementById('btn-export-json').onclick = () => download('dashboard_data.json', JSON.stringify(DATA, null, 2), 'application/json');
+document.getElementById('btn-export-csv').onclick = () => {
+  const keys = algoKeys();
+  const cols = ['algorithm','avg_waiting_time','avg_turnaround_time','avg_response_time','throughput','cpu_utilization',
+    'idle_cpu_time','idle_cpu_percentage','context_switches','fairness_index','starvation_score',
+    'scheduling_efficiency_score','energy_score','cache_miss_rate','total_time','process_count'];
+  let csv = cols.join(',') + '\n';
+  keys.forEach(k => { csv += cols.map(c => DATA.algorithms[k].metrics[c]).join(',') + '\n'; });
+  download('metrics_summary.csv', csv, 'text/csv');
+};
+document.getElementById('btn-export-png').onclick = () => {
+  const activeView = document.querySelector('.view-section.active');
+  const target = activeView.id === 'view-replay' ? document.getElementById('gantt-panel') : (activeView.querySelector('.panel') || activeView);
+  html2canvas(target, { backgroundColor: '#07090d' }).then(canvas => {
+    const link = document.createElement('a'); link.download = 'chart_export.png'; link.href = canvas.toDataURL(); link.click();
+  });
+};
+document.getElementById('btn-print').onclick = () => window.print();
+
+document.getElementById('file-input').addEventListener('change', (e) => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    try { DATA = JSON.parse(evt.target.result); loadNewData(); document.querySelector('.nav-item[data-view="replay"]').click(); }
+    catch (err) { alert('Could not parse that file as dashboard JSON: ' + err.message); }
+  };
+  reader.readAsText(file);
+});
+
+/* ---------------- init / reload ---------------- */
+function renderReplay() { renderGantt(); renderLanes(); renderMetrics(); renderTable(); }
+function loadNewData() {
+  state.algo = algoKeys()[0]; state.tick = 0; state.playing = false; updatePlayButton();
+  renderTabs(); renderReplay();
+  if (document.getElementById('view-compare').classList.contains('active')) renderCompare();
+}
+loadNewData();
+</script>
+</body>
+</html>

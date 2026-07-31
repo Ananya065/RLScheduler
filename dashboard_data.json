@@ -1,0 +1,1898 @@
+{
+  "meta": {
+    "n_processes": 25,
+    "seed": 42,
+    "quantum": 4,
+    "source": "random"
+  },
+  "algorithms": {
+    "FCFS": {
+      "metrics": {
+        "algorithm": "FCFS",
+        "avg_waiting_time": 102.32,
+        "avg_turnaround_time": 113.12,
+        "avg_response_time": 102.32,
+        "throughput": 0.09124087591240876,
+        "cpu_utilization": 0.9854014598540146,
+        "idle_cpu_time": 4,
+        "idle_cpu_percentage": 0.014598540145985401,
+        "context_switches": 24,
+        "fairness_index": 0.6869709552281115,
+        "starvation_score": 1.0230648944487883,
+        "energy_score": 342.0,
+        "cache_miss_rate": 0.0585036496350365,
+        "scheduling_efficiency_score": 33.461219361602836,
+        "total_time": 274,
+        "process_count": 25
+      },
+      "processes": [
+        {
+          "pid": 0,
+          "arrival_time": 4,
+          "burst_time": 16,
+          "priority": 2,
+          "waiting_time": 0,
+          "turnaround_time": 16,
+          "response_time": 0,
+          "completion_time": 20,
+          "execution_history": [
+            [
+              4,
+              20
+            ]
+          ]
+        },
+        {
+          "pid": 1,
+          "arrival_time": 9,
+          "burst_time": 5,
+          "priority": 1,
+          "waiting_time": 11,
+          "turnaround_time": 16,
+          "response_time": 11,
+          "completion_time": 25,
+          "execution_history": [
+            [
+              20,
+              25
+            ]
+          ]
+        },
+        {
+          "pid": 2,
+          "arrival_time": 14,
+          "burst_time": 8,
+          "priority": 1,
+          "waiting_time": 11,
+          "turnaround_time": 19,
+          "response_time": 11,
+          "completion_time": 33,
+          "execution_history": [
+            [
+              25,
+              33
+            ]
+          ]
+        },
+        {
+          "pid": 3,
+          "arrival_time": 14,
+          "burst_time": 10,
+          "priority": 2,
+          "waiting_time": 19,
+          "turnaround_time": 29,
+          "response_time": 19,
+          "completion_time": 43,
+          "execution_history": [
+            [
+              33,
+              43
+            ]
+          ]
+        },
+        {
+          "pid": 4,
+          "arrival_time": 14,
+          "burst_time": 11,
+          "priority": 3,
+          "waiting_time": 29,
+          "turnaround_time": 40,
+          "response_time": 29,
+          "completion_time": 54,
+          "execution_history": [
+            [
+              43,
+              54
+            ]
+          ]
+        },
+        {
+          "pid": 5,
+          "arrival_time": 17,
+          "burst_time": 2,
+          "priority": 4,
+          "waiting_time": 37,
+          "turnaround_time": 39,
+          "response_time": 37,
+          "completion_time": 56,
+          "execution_history": [
+            [
+              54,
+              56
+            ]
+          ]
+        },
+        {
+          "pid": 6,
+          "arrival_time": 20,
+          "burst_time": 12,
+          "priority": 2,
+          "waiting_time": 36,
+          "turnaround_time": 48,
+          "response_time": 36,
+          "completion_time": 68,
+          "execution_history": [
+            [
+              56,
+              68
+            ]
+          ]
+        },
+        {
+          "pid": 7,
+          "arrival_time": 26,
+          "burst_time": 4,
+          "priority": 0,
+          "waiting_time": 42,
+          "turnaround_time": 46,
+          "response_time": 42,
+          "completion_time": 72,
+          "execution_history": [
+            [
+              68,
+              72
+            ]
+          ]
+        },
+        {
+          "pid": 8,
+          "arrival_time": 27,
+          "burst_time": 16,
+          "priority": 4,
+          "waiting_time": 45,
+          "turnaround_time": 61,
+          "response_time": 45,
+          "completion_time": 88,
+          "execution_history": [
+            [
+              72,
+              88
+            ]
+          ]
+        },
+        {
+          "pid": 9,
+          "arrival_time": 29,
+          "burst_time": 14,
+          "priority": 3,
+          "waiting_time": 59,
+          "turnaround_time": 73,
+          "response_time": 59,
+          "completion_time": 102,
+          "execution_history": [
+            [
+              88,
+              102
+            ]
+          ]
+        },
+        {
+          "pid": 10,
+          "arrival_time": 29,
+          "burst_time": 19,
+          "priority": 3,
+          "waiting_time": 73,
+          "turnaround_time": 92,
+          "response_time": 73,
+          "completion_time": 121,
+          "execution_history": [
+            [
+              102,
+              121
+            ]
+          ]
+        },
+        {
+          "pid": 11,
+          "arrival_time": 31,
+          "burst_time": 16,
+          "priority": 0,
+          "waiting_time": 90,
+          "turnaround_time": 106,
+          "response_time": 90,
+          "completion_time": 137,
+          "execution_history": [
+            [
+              121,
+              137
+            ]
+          ]
+        },
+        {
+          "pid": 12,
+          "arrival_time": 34,
+          "burst_time": 8,
+          "priority": 1,
+          "waiting_time": 103,
+          "turnaround_time": 111,
+          "response_time": 103,
+          "completion_time": 145,
+          "execution_history": [
+            [
+              137,
+              145
+            ]
+          ]
+        },
+        {
+          "pid": 13,
+          "arrival_time": 35,
+          "burst_time": 20,
+          "priority": 3,
+          "waiting_time": 110,
+          "turnaround_time": 130,
+          "response_time": 110,
+          "completion_time": 165,
+          "execution_history": [
+            [
+              145,
+              165
+            ]
+          ]
+        },
+        {
+          "pid": 14,
+          "arrival_time": 38,
+          "burst_time": 9,
+          "priority": 4,
+          "waiting_time": 127,
+          "turnaround_time": 136,
+          "response_time": 127,
+          "completion_time": 174,
+          "execution_history": [
+            [
+              165,
+              174
+            ]
+          ]
+        },
+        {
+          "pid": 15,
+          "arrival_time": 38,
+          "burst_time": 8,
+          "priority": 2,
+          "waiting_time": 136,
+          "turnaround_time": 144,
+          "response_time": 136,
+          "completion_time": 182,
+          "execution_history": [
+            [
+              174,
+              182
+            ]
+          ]
+        },
+        {
+          "pid": 16,
+          "arrival_time": 38,
+          "burst_time": 19,
+          "priority": 4,
+          "waiting_time": 144,
+          "turnaround_time": 163,
+          "response_time": 144,
+          "completion_time": 201,
+          "execution_history": [
+            [
+              182,
+              201
+            ]
+          ]
+        },
+        {
+          "pid": 17,
+          "arrival_time": 39,
+          "burst_time": 9,
+          "priority": 4,
+          "waiting_time": 162,
+          "turnaround_time": 171,
+          "response_time": 162,
+          "completion_time": 210,
+          "execution_history": [
+            [
+              201,
+              210
+            ]
+          ]
+        },
+        {
+          "pid": 18,
+          "arrival_time": 41,
+          "burst_time": 3,
+          "priority": 1,
+          "waiting_time": 169,
+          "turnaround_time": 172,
+          "response_time": 169,
+          "completion_time": 213,
+          "execution_history": [
+            [
+              210,
+              213
+            ]
+          ]
+        },
+        {
+          "pid": 19,
+          "arrival_time": 41,
+          "burst_time": 10,
+          "priority": 4,
+          "waiting_time": 172,
+          "turnaround_time": 182,
+          "response_time": 172,
+          "completion_time": 223,
+          "execution_history": [
+            [
+              213,
+              223
+            ]
+          ]
+        },
+        {
+          "pid": 20,
+          "arrival_time": 44,
+          "burst_time": 17,
+          "priority": 1,
+          "waiting_time": 179,
+          "turnaround_time": 196,
+          "response_time": 179,
+          "completion_time": 240,
+          "execution_history": [
+            [
+              223,
+              240
+            ]
+          ]
+        },
+        {
+          "pid": 21,
+          "arrival_time": 44,
+          "burst_time": 5,
+          "priority": 1,
+          "waiting_time": 196,
+          "turnaround_time": 201,
+          "response_time": 196,
+          "completion_time": 245,
+          "execution_history": [
+            [
+              240,
+              245
+            ]
+          ]
+        },
+        {
+          "pid": 22,
+          "arrival_time": 48,
+          "burst_time": 10,
+          "priority": 3,
+          "waiting_time": 197,
+          "turnaround_time": 207,
+          "response_time": 197,
+          "completion_time": 255,
+          "execution_history": [
+            [
+              245,
+              255
+            ]
+          ]
+        },
+        {
+          "pid": 23,
+          "arrival_time": 51,
+          "burst_time": 4,
+          "priority": 3,
+          "waiting_time": 204,
+          "turnaround_time": 208,
+          "response_time": 204,
+          "completion_time": 259,
+          "execution_history": [
+            [
+              255,
+              259
+            ]
+          ]
+        },
+        {
+          "pid": 24,
+          "arrival_time": 52,
+          "burst_time": 15,
+          "priority": 0,
+          "waiting_time": 207,
+          "turnaround_time": 222,
+          "response_time": 207,
+          "completion_time": 274,
+          "execution_history": [
+            [
+              259,
+              274
+            ]
+          ]
+        }
+      ]
+    },
+    "SJF": {
+      "metrics": {
+        "algorithm": "SJF",
+        "avg_waiting_time": 71.6,
+        "avg_turnaround_time": 82.4,
+        "avg_response_time": 71.6,
+        "throughput": 0.09124087591240876,
+        "cpu_utilization": 0.9854014598540146,
+        "idle_cpu_time": 4,
+        "idle_cpu_percentage": 0.014598540145985401,
+        "context_switches": 24,
+        "fairness_index": 0.5205179023978166,
+        "starvation_score": 2.058659217877095,
+        "energy_score": 342.0,
+        "cache_miss_rate": 0.15427007299270049,
+        "scheduling_efficiency_score": 16.769409874270224,
+        "total_time": 274,
+        "process_count": 25
+      },
+      "processes": [
+        {
+          "pid": 0,
+          "arrival_time": 4,
+          "burst_time": 16,
+          "priority": 2,
+          "waiting_time": 0,
+          "turnaround_time": 16,
+          "response_time": 0,
+          "completion_time": 20,
+          "execution_history": [
+            [
+              4,
+              20
+            ]
+          ]
+        },
+        {
+          "pid": 1,
+          "arrival_time": 9,
+          "burst_time": 5,
+          "priority": 1,
+          "waiting_time": 13,
+          "turnaround_time": 18,
+          "response_time": 13,
+          "completion_time": 27,
+          "execution_history": [
+            [
+              22,
+              27
+            ]
+          ]
+        },
+        {
+          "pid": 2,
+          "arrival_time": 14,
+          "burst_time": 8,
+          "priority": 1,
+          "waiting_time": 17,
+          "turnaround_time": 25,
+          "response_time": 17,
+          "completion_time": 39,
+          "execution_history": [
+            [
+              31,
+              39
+            ]
+          ]
+        },
+        {
+          "pid": 3,
+          "arrival_time": 14,
+          "burst_time": 10,
+          "priority": 2,
+          "waiting_time": 71,
+          "turnaround_time": 81,
+          "response_time": 71,
+          "completion_time": 95,
+          "execution_history": [
+            [
+              85,
+              95
+            ]
+          ]
+        },
+        {
+          "pid": 4,
+          "arrival_time": 14,
+          "burst_time": 11,
+          "priority": 3,
+          "waiting_time": 101,
+          "turnaround_time": 112,
+          "response_time": 101,
+          "completion_time": 126,
+          "execution_history": [
+            [
+              115,
+              126
+            ]
+          ]
+        },
+        {
+          "pid": 5,
+          "arrival_time": 17,
+          "burst_time": 2,
+          "priority": 4,
+          "waiting_time": 3,
+          "turnaround_time": 5,
+          "response_time": 3,
+          "completion_time": 22,
+          "execution_history": [
+            [
+              20,
+              22
+            ]
+          ]
+        },
+        {
+          "pid": 6,
+          "arrival_time": 20,
+          "burst_time": 12,
+          "priority": 2,
+          "waiting_time": 106,
+          "turnaround_time": 118,
+          "response_time": 106,
+          "completion_time": 138,
+          "execution_history": [
+            [
+              126,
+              138
+            ]
+          ]
+        },
+        {
+          "pid": 7,
+          "arrival_time": 26,
+          "burst_time": 4,
+          "priority": 0,
+          "waiting_time": 1,
+          "turnaround_time": 5,
+          "response_time": 1,
+          "completion_time": 31,
+          "execution_history": [
+            [
+              27,
+              31
+            ]
+          ]
+        },
+        {
+          "pid": 8,
+          "arrival_time": 27,
+          "burst_time": 16,
+          "priority": 4,
+          "waiting_time": 140,
+          "turnaround_time": 156,
+          "response_time": 140,
+          "completion_time": 183,
+          "execution_history": [
+            [
+              167,
+              183
+            ]
+          ]
+        },
+        {
+          "pid": 9,
+          "arrival_time": 29,
+          "burst_time": 14,
+          "priority": 3,
+          "waiting_time": 109,
+          "turnaround_time": 123,
+          "response_time": 109,
+          "completion_time": 152,
+          "execution_history": [
+            [
+              138,
+              152
+            ]
+          ]
+        },
+        {
+          "pid": 10,
+          "arrival_time": 29,
+          "burst_time": 19,
+          "priority": 3,
+          "waiting_time": 187,
+          "turnaround_time": 206,
+          "response_time": 187,
+          "completion_time": 235,
+          "execution_history": [
+            [
+              216,
+              235
+            ]
+          ]
+        },
+        {
+          "pid": 11,
+          "arrival_time": 31,
+          "burst_time": 16,
+          "priority": 0,
+          "waiting_time": 152,
+          "turnaround_time": 168,
+          "response_time": 152,
+          "completion_time": 199,
+          "execution_history": [
+            [
+              183,
+              199
+            ]
+          ]
+        },
+        {
+          "pid": 12,
+          "arrival_time": 34,
+          "burst_time": 8,
+          "priority": 1,
+          "waiting_time": 5,
+          "turnaround_time": 13,
+          "response_time": 5,
+          "completion_time": 47,
+          "execution_history": [
+            [
+              39,
+              47
+            ]
+          ]
+        },
+        {
+          "pid": 13,
+          "arrival_time": 35,
+          "burst_time": 20,
+          "priority": 3,
+          "waiting_time": 219,
+          "turnaround_time": 239,
+          "response_time": 219,
+          "completion_time": 274,
+          "execution_history": [
+            [
+              254,
+              274
+            ]
+          ]
+        },
+        {
+          "pid": 14,
+          "arrival_time": 38,
+          "burst_time": 9,
+          "priority": 4,
+          "waiting_time": 29,
+          "turnaround_time": 38,
+          "response_time": 29,
+          "completion_time": 76,
+          "execution_history": [
+            [
+              67,
+              76
+            ]
+          ]
+        },
+        {
+          "pid": 15,
+          "arrival_time": 38,
+          "burst_time": 8,
+          "priority": 2,
+          "waiting_time": 21,
+          "turnaround_time": 29,
+          "response_time": 21,
+          "completion_time": 67,
+          "execution_history": [
+            [
+              59,
+              67
+            ]
+          ]
+        },
+        {
+          "pid": 16,
+          "arrival_time": 38,
+          "burst_time": 19,
+          "priority": 4,
+          "waiting_time": 197,
+          "turnaround_time": 216,
+          "response_time": 197,
+          "completion_time": 254,
+          "execution_history": [
+            [
+              235,
+              254
+            ]
+          ]
+        },
+        {
+          "pid": 17,
+          "arrival_time": 39,
+          "burst_time": 9,
+          "priority": 4,
+          "waiting_time": 37,
+          "turnaround_time": 46,
+          "response_time": 37,
+          "completion_time": 85,
+          "execution_history": [
+            [
+              76,
+              85
+            ]
+          ]
+        },
+        {
+          "pid": 18,
+          "arrival_time": 41,
+          "burst_time": 3,
+          "priority": 1,
+          "waiting_time": 6,
+          "turnaround_time": 9,
+          "response_time": 6,
+          "completion_time": 50,
+          "execution_history": [
+            [
+              47,
+              50
+            ]
+          ]
+        },
+        {
+          "pid": 19,
+          "arrival_time": 41,
+          "burst_time": 10,
+          "priority": 4,
+          "waiting_time": 54,
+          "turnaround_time": 64,
+          "response_time": 54,
+          "completion_time": 105,
+          "execution_history": [
+            [
+              95,
+              105
+            ]
+          ]
+        },
+        {
+          "pid": 20,
+          "arrival_time": 44,
+          "burst_time": 17,
+          "priority": 1,
+          "waiting_time": 155,
+          "turnaround_time": 172,
+          "response_time": 155,
+          "completion_time": 216,
+          "execution_history": [
+            [
+              199,
+              216
+            ]
+          ]
+        },
+        {
+          "pid": 21,
+          "arrival_time": 44,
+          "burst_time": 5,
+          "priority": 1,
+          "waiting_time": 6,
+          "turnaround_time": 11,
+          "response_time": 6,
+          "completion_time": 55,
+          "execution_history": [
+            [
+              50,
+              55
+            ]
+          ]
+        },
+        {
+          "pid": 22,
+          "arrival_time": 48,
+          "burst_time": 10,
+          "priority": 3,
+          "waiting_time": 57,
+          "turnaround_time": 67,
+          "response_time": 57,
+          "completion_time": 115,
+          "execution_history": [
+            [
+              105,
+              115
+            ]
+          ]
+        },
+        {
+          "pid": 23,
+          "arrival_time": 51,
+          "burst_time": 4,
+          "priority": 3,
+          "waiting_time": 4,
+          "turnaround_time": 8,
+          "response_time": 4,
+          "completion_time": 59,
+          "execution_history": [
+            [
+              55,
+              59
+            ]
+          ]
+        },
+        {
+          "pid": 24,
+          "arrival_time": 52,
+          "burst_time": 15,
+          "priority": 0,
+          "waiting_time": 100,
+          "turnaround_time": 115,
+          "response_time": 100,
+          "completion_time": 167,
+          "execution_history": [
+            [
+              152,
+              167
+            ]
+          ]
+        }
+      ]
+    },
+    "Priority": {
+      "metrics": {
+        "algorithm": "Priority",
+        "avg_waiting_time": 98.2,
+        "avg_turnaround_time": 109.0,
+        "avg_response_time": 98.2,
+        "throughput": 0.09124087591240876,
+        "cpu_utilization": 0.9854014598540146,
+        "idle_cpu_time": 4,
+        "idle_cpu_percentage": 0.014598540145985401,
+        "context_switches": 24,
+        "fairness_index": 0.6356699318400548,
+        "starvation_score": 1.2708757637474541,
+        "energy_score": 342.0,
+        "cache_miss_rate": 0.05959854014598541,
+        "scheduling_efficiency_score": 27.58363486106382,
+        "total_time": 274,
+        "process_count": 25
+      },
+      "processes": [
+        {
+          "pid": 0,
+          "arrival_time": 4,
+          "burst_time": 16,
+          "priority": 2,
+          "waiting_time": 0,
+          "turnaround_time": 16,
+          "response_time": 0,
+          "completion_time": 20,
+          "execution_history": [
+            [
+              4,
+              20
+            ]
+          ]
+        },
+        {
+          "pid": 1,
+          "arrival_time": 9,
+          "burst_time": 5,
+          "priority": 1,
+          "waiting_time": 11,
+          "turnaround_time": 16,
+          "response_time": 11,
+          "completion_time": 25,
+          "execution_history": [
+            [
+              20,
+              25
+            ]
+          ]
+        },
+        {
+          "pid": 2,
+          "arrival_time": 14,
+          "burst_time": 8,
+          "priority": 1,
+          "waiting_time": 11,
+          "turnaround_time": 19,
+          "response_time": 11,
+          "completion_time": 33,
+          "execution_history": [
+            [
+              25,
+              33
+            ]
+          ]
+        },
+        {
+          "pid": 3,
+          "arrival_time": 14,
+          "burst_time": 10,
+          "priority": 2,
+          "waiting_time": 87,
+          "turnaround_time": 97,
+          "response_time": 87,
+          "completion_time": 111,
+          "execution_history": [
+            [
+              101,
+              111
+            ]
+          ]
+        },
+        {
+          "pid": 4,
+          "arrival_time": 14,
+          "burst_time": 11,
+          "priority": 3,
+          "waiting_time": 117,
+          "turnaround_time": 128,
+          "response_time": 117,
+          "completion_time": 142,
+          "execution_history": [
+            [
+              131,
+              142
+            ]
+          ]
+        },
+        {
+          "pid": 5,
+          "arrival_time": 17,
+          "burst_time": 2,
+          "priority": 4,
+          "waiting_time": 192,
+          "turnaround_time": 194,
+          "response_time": 192,
+          "completion_time": 211,
+          "execution_history": [
+            [
+              209,
+              211
+            ]
+          ]
+        },
+        {
+          "pid": 6,
+          "arrival_time": 20,
+          "burst_time": 12,
+          "priority": 2,
+          "waiting_time": 91,
+          "turnaround_time": 103,
+          "response_time": 91,
+          "completion_time": 123,
+          "execution_history": [
+            [
+              111,
+              123
+            ]
+          ]
+        },
+        {
+          "pid": 7,
+          "arrival_time": 26,
+          "burst_time": 4,
+          "priority": 0,
+          "waiting_time": 7,
+          "turnaround_time": 11,
+          "response_time": 7,
+          "completion_time": 37,
+          "execution_history": [
+            [
+              33,
+              37
+            ]
+          ]
+        },
+        {
+          "pid": 8,
+          "arrival_time": 27,
+          "burst_time": 16,
+          "priority": 4,
+          "waiting_time": 184,
+          "turnaround_time": 200,
+          "response_time": 184,
+          "completion_time": 227,
+          "execution_history": [
+            [
+              211,
+              227
+            ]
+          ]
+        },
+        {
+          "pid": 9,
+          "arrival_time": 29,
+          "burst_time": 14,
+          "priority": 3,
+          "waiting_time": 113,
+          "turnaround_time": 127,
+          "response_time": 113,
+          "completion_time": 156,
+          "execution_history": [
+            [
+              142,
+              156
+            ]
+          ]
+        },
+        {
+          "pid": 10,
+          "arrival_time": 29,
+          "burst_time": 19,
+          "priority": 3,
+          "waiting_time": 127,
+          "turnaround_time": 146,
+          "response_time": 127,
+          "completion_time": 175,
+          "execution_history": [
+            [
+              156,
+              175
+            ]
+          ]
+        },
+        {
+          "pid": 11,
+          "arrival_time": 31,
+          "burst_time": 16,
+          "priority": 0,
+          "waiting_time": 6,
+          "turnaround_time": 22,
+          "response_time": 6,
+          "completion_time": 53,
+          "execution_history": [
+            [
+              37,
+              53
+            ]
+          ]
+        },
+        {
+          "pid": 12,
+          "arrival_time": 34,
+          "burst_time": 8,
+          "priority": 1,
+          "waiting_time": 34,
+          "turnaround_time": 42,
+          "response_time": 34,
+          "completion_time": 76,
+          "execution_history": [
+            [
+              68,
+              76
+            ]
+          ]
+        },
+        {
+          "pid": 13,
+          "arrival_time": 35,
+          "burst_time": 20,
+          "priority": 3,
+          "waiting_time": 140,
+          "turnaround_time": 160,
+          "response_time": 140,
+          "completion_time": 195,
+          "execution_history": [
+            [
+              175,
+              195
+            ]
+          ]
+        },
+        {
+          "pid": 14,
+          "arrival_time": 38,
+          "burst_time": 9,
+          "priority": 4,
+          "waiting_time": 189,
+          "turnaround_time": 198,
+          "response_time": 189,
+          "completion_time": 236,
+          "execution_history": [
+            [
+              227,
+              236
+            ]
+          ]
+        },
+        {
+          "pid": 15,
+          "arrival_time": 38,
+          "burst_time": 8,
+          "priority": 2,
+          "waiting_time": 85,
+          "turnaround_time": 93,
+          "response_time": 85,
+          "completion_time": 131,
+          "execution_history": [
+            [
+              123,
+              131
+            ]
+          ]
+        },
+        {
+          "pid": 16,
+          "arrival_time": 38,
+          "burst_time": 19,
+          "priority": 4,
+          "waiting_time": 198,
+          "turnaround_time": 217,
+          "response_time": 198,
+          "completion_time": 255,
+          "execution_history": [
+            [
+              236,
+              255
+            ]
+          ]
+        },
+        {
+          "pid": 17,
+          "arrival_time": 39,
+          "burst_time": 9,
+          "priority": 4,
+          "waiting_time": 216,
+          "turnaround_time": 225,
+          "response_time": 216,
+          "completion_time": 264,
+          "execution_history": [
+            [
+              255,
+              264
+            ]
+          ]
+        },
+        {
+          "pid": 18,
+          "arrival_time": 41,
+          "burst_time": 3,
+          "priority": 1,
+          "waiting_time": 35,
+          "turnaround_time": 38,
+          "response_time": 35,
+          "completion_time": 79,
+          "execution_history": [
+            [
+              76,
+              79
+            ]
+          ]
+        },
+        {
+          "pid": 19,
+          "arrival_time": 41,
+          "burst_time": 10,
+          "priority": 4,
+          "waiting_time": 223,
+          "turnaround_time": 233,
+          "response_time": 223,
+          "completion_time": 274,
+          "execution_history": [
+            [
+              264,
+              274
+            ]
+          ]
+        },
+        {
+          "pid": 20,
+          "arrival_time": 44,
+          "burst_time": 17,
+          "priority": 1,
+          "waiting_time": 35,
+          "turnaround_time": 52,
+          "response_time": 35,
+          "completion_time": 96,
+          "execution_history": [
+            [
+              79,
+              96
+            ]
+          ]
+        },
+        {
+          "pid": 21,
+          "arrival_time": 44,
+          "burst_time": 5,
+          "priority": 1,
+          "waiting_time": 52,
+          "turnaround_time": 57,
+          "response_time": 52,
+          "completion_time": 101,
+          "execution_history": [
+            [
+              96,
+              101
+            ]
+          ]
+        },
+        {
+          "pid": 22,
+          "arrival_time": 48,
+          "burst_time": 10,
+          "priority": 3,
+          "waiting_time": 147,
+          "turnaround_time": 157,
+          "response_time": 147,
+          "completion_time": 205,
+          "execution_history": [
+            [
+              195,
+              205
+            ]
+          ]
+        },
+        {
+          "pid": 23,
+          "arrival_time": 51,
+          "burst_time": 4,
+          "priority": 3,
+          "waiting_time": 154,
+          "turnaround_time": 158,
+          "response_time": 154,
+          "completion_time": 209,
+          "execution_history": [
+            [
+              205,
+              209
+            ]
+          ]
+        },
+        {
+          "pid": 24,
+          "arrival_time": 52,
+          "burst_time": 15,
+          "priority": 0,
+          "waiting_time": 1,
+          "turnaround_time": 16,
+          "response_time": 1,
+          "completion_time": 68,
+          "execution_history": [
+            [
+              53,
+              68
+            ]
+          ]
+        }
+      ]
+    },
+    "Round Robin": {
+      "metrics": {
+        "algorithm": "Round Robin (q=4)",
+        "avg_waiting_time": 133.4,
+        "avg_turnaround_time": 144.2,
+        "avg_response_time": 39.0,
+        "throughput": 0.09124087591240876,
+        "cpu_utilization": 0.9854014598540146,
+        "idle_cpu_time": 4,
+        "idle_cpu_percentage": 0.014598540145985401,
+        "context_switches": 73,
+        "fairness_index": 0.7832952738784198,
+        "starvation_score": 0.6341829085457271,
+        "energy_score": 489.0,
+        "cache_miss_rate": 0.8451824817518229,
+        "scheduling_efficiency_score": 47.23218572047299,
+        "total_time": 274,
+        "process_count": 25
+      },
+      "processes": [
+        {
+          "pid": 0,
+          "arrival_time": 4,
+          "burst_time": 16,
+          "priority": 2,
+          "waiting_time": 23,
+          "turnaround_time": 39,
+          "response_time": 0,
+          "completion_time": 43,
+          "execution_history": [
+            [
+              4,
+              8
+            ],
+            [
+              8,
+              12
+            ],
+            [
+              16,
+              20
+            ],
+            [
+              39,
+              43
+            ]
+          ]
+        },
+        {
+          "pid": 1,
+          "arrival_time": 9,
+          "burst_time": 5,
+          "priority": 1,
+          "waiting_time": 19,
+          "turnaround_time": 24,
+          "response_time": 3,
+          "completion_time": 33,
+          "execution_history": [
+            [
+              12,
+              16
+            ],
+            [
+              32,
+              33
+            ]
+          ]
+        },
+        {
+          "pid": 2,
+          "arrival_time": 14,
+          "burst_time": 8,
+          "priority": 1,
+          "waiting_time": 25,
+          "turnaround_time": 33,
+          "response_time": 6,
+          "completion_time": 47,
+          "execution_history": [
+            [
+              20,
+              24
+            ],
+            [
+              43,
+              47
+            ]
+          ]
+        },
+        {
+          "pid": 3,
+          "arrival_time": 14,
+          "burst_time": 10,
+          "priority": 2,
+          "waiting_time": 112,
+          "turnaround_time": 122,
+          "response_time": 10,
+          "completion_time": 136,
+          "execution_history": [
+            [
+              24,
+              28
+            ],
+            [
+              55,
+              59
+            ],
+            [
+              134,
+              136
+            ]
+          ]
+        },
+        {
+          "pid": 4,
+          "arrival_time": 14,
+          "burst_time": 11,
+          "priority": 3,
+          "waiting_time": 126,
+          "turnaround_time": 137,
+          "response_time": 14,
+          "completion_time": 151,
+          "execution_history": [
+            [
+              28,
+              32
+            ],
+            [
+              71,
+              75
+            ],
+            [
+              148,
+              151
+            ]
+          ]
+        },
+        {
+          "pid": 5,
+          "arrival_time": 17,
+          "burst_time": 2,
+          "priority": 4,
+          "waiting_time": 16,
+          "turnaround_time": 18,
+          "response_time": 16,
+          "completion_time": 35,
+          "execution_history": [
+            [
+              33,
+              35
+            ]
+          ]
+        },
+        {
+          "pid": 6,
+          "arrival_time": 20,
+          "burst_time": 12,
+          "priority": 2,
+          "waiting_time": 147,
+          "turnaround_time": 159,
+          "response_time": 15,
+          "completion_time": 179,
+          "execution_history": [
+            [
+              35,
+              39
+            ],
+            [
+              99,
+              103
+            ],
+            [
+              175,
+              179
+            ]
+          ]
+        },
+        {
+          "pid": 7,
+          "arrival_time": 26,
+          "burst_time": 4,
+          "priority": 0,
+          "waiting_time": 21,
+          "turnaround_time": 25,
+          "response_time": 21,
+          "completion_time": 51,
+          "execution_history": [
+            [
+              47,
+              51
+            ]
+          ]
+        },
+        {
+          "pid": 8,
+          "arrival_time": 27,
+          "burst_time": 16,
+          "priority": 4,
+          "waiting_time": 195,
+          "turnaround_time": 211,
+          "response_time": 24,
+          "completion_time": 238,
+          "execution_history": [
+            [
+              51,
+              55
+            ],
+            [
+              130,
+              134
+            ],
+            [
+              196,
+              200
+            ],
+            [
+              234,
+              238
+            ]
+          ]
+        },
+        {
+          "pid": 9,
+          "arrival_time": 29,
+          "burst_time": 14,
+          "priority": 3,
+          "waiting_time": 197,
+          "turnaround_time": 211,
+          "response_time": 30,
+          "completion_time": 240,
+          "execution_history": [
+            [
+              59,
+              63
+            ],
+            [
+              136,
+              140
+            ],
+            [
+              200,
+              204
+            ],
+            [
+              238,
+              240
+            ]
+          ]
+        },
+        {
+          "pid": 10,
+          "arrival_time": 29,
+          "burst_time": 19,
+          "priority": 3,
+          "waiting_time": 218,
+          "turnaround_time": 237,
+          "response_time": 34,
+          "completion_time": 266,
+          "execution_history": [
+            [
+              63,
+              67
+            ],
+            [
+              140,
+              144
+            ],
+            [
+              204,
+              208
+            ],
+            [
+              240,
+              244
+            ],
+            [
+              263,
+              266
+            ]
+          ]
+        },
+        {
+          "pid": 11,
+          "arrival_time": 31,
+          "burst_time": 16,
+          "priority": 0,
+          "waiting_time": 201,
+          "turnaround_time": 217,
+          "response_time": 36,
+          "completion_time": 248,
+          "execution_history": [
+            [
+              67,
+              71
+            ],
+            [
+              144,
+              148
+            ],
+            [
+              208,
+              212
+            ],
+            [
+              244,
+              248
+            ]
+          ]
+        },
+        {
+          "pid": 12,
+          "arrival_time": 34,
+          "burst_time": 8,
+          "priority": 1,
+          "waiting_time": 113,
+          "turnaround_time": 121,
+          "response_time": 41,
+          "completion_time": 155,
+          "execution_history": [
+            [
+              75,
+              79
+            ],
+            [
+              151,
+              155
+            ]
+          ]
+        },
+        {
+          "pid": 13,
+          "arrival_time": 35,
+          "burst_time": 20,
+          "priority": 3,
+          "waiting_time": 215,
+          "turnaround_time": 235,
+          "response_time": 44,
+          "completion_time": 270,
+          "execution_history": [
+            [
+              79,
+              83
+            ],
+            [
+              155,
+              159
+            ],
+            [
+              212,
+              216
+            ],
+            [
+              248,
+              252
+            ],
+            [
+              266,
+              270
+            ]
+          ]
+        },
+        {
+          "pid": 14,
+          "arrival_time": 38,
+          "burst_time": 9,
+          "priority": 4,
+          "waiting_time": 170,
+          "turnaround_time": 179,
+          "response_time": 45,
+          "completion_time": 217,
+          "execution_history": [
+            [
+              83,
+              87
+            ],
+            [
+              159,
+              163
+            ],
+            [
+              216,
+              217
+            ]
+          ]
+        },
+        {
+          "pid": 15,
+          "arrival_time": 38,
+          "burst_time": 8,
+          "priority": 2,
+          "waiting_time": 121,
+          "turnaround_time": 129,
+          "response_time": 49,
+          "completion_time": 167,
+          "execution_history": [
+            [
+              87,
+              91
+            ],
+            [
+              163,
+              167
+            ]
+          ]
+        },
+        {
+          "pid": 16,
+          "arrival_time": 38,
+          "burst_time": 19,
+          "priority": 4,
+          "waiting_time": 216,
+          "turnaround_time": 235,
+          "response_time": 53,
+          "completion_time": 273,
+          "execution_history": [
+            [
+              91,
+              95
+            ],
+            [
+              167,
+              171
+            ],
+            [
+              217,
+              221
+            ],
+            [
+              252,
+              256
+            ],
+            [
+              270,
+              273
+            ]
+          ]
+        },
+        {
+          "pid": 17,
+          "arrival_time": 39,
+          "burst_time": 9,
+          "priority": 4,
+          "waiting_time": 174,
+          "turnaround_time": 183,
+          "response_time": 56,
+          "completion_time": 222,
+          "execution_history": [
+            [
+              95,
+              99
+            ],
+            [
+              171,
+              175
+            ],
+            [
+              221,
+              222
+            ]
+          ]
+        },
+        {
+          "pid": 18,
+          "arrival_time": 41,
+          "burst_time": 3,
+          "priority": 1,
+          "waiting_time": 62,
+          "turnaround_time": 65,
+          "response_time": 62,
+          "completion_time": 106,
+          "execution_history": [
+            [
+              103,
+              106
+            ]
+          ]
+        },
+        {
+          "pid": 19,
+          "arrival_time": 41,
+          "burst_time": 10,
+          "priority": 4,
+          "waiting_time": 173,
+          "turnaround_time": 183,
+          "response_time": 65,
+          "completion_time": 224,
+          "execution_history": [
+            [
+              106,
+              110
+            ],
+            [
+              179,
+              183
+            ],
+            [
+              222,
+              224
+            ]
+          ]
+        },
+        {
+          "pid": 20,
+          "arrival_time": 44,
+          "burst_time": 17,
+          "priority": 1,
+          "waiting_time": 213,
+          "turnaround_time": 230,
+          "response_time": 66,
+          "completion_time": 274,
+          "execution_history": [
+            [
+              110,
+              114
+            ],
+            [
+              183,
+              187
+            ],
+            [
+              224,
+              228
+            ],
+            [
+              256,
+              260
+            ],
+            [
+              273,
+              274
+            ]
+          ]
+        },
+        {
+          "pid": 21,
+          "arrival_time": 44,
+          "burst_time": 5,
+          "priority": 1,
+          "waiting_time": 139,
+          "turnaround_time": 144,
+          "response_time": 70,
+          "completion_time": 188,
+          "execution_history": [
+            [
+              114,
+              118
+            ],
+            [
+              187,
+              188
+            ]
+          ]
+        },
+        {
+          "pid": 22,
+          "arrival_time": 48,
+          "burst_time": 10,
+          "priority": 3,
+          "waiting_time": 172,
+          "turnaround_time": 182,
+          "response_time": 70,
+          "completion_time": 230,
+          "execution_history": [
+            [
+              118,
+              122
+            ],
+            [
+              188,
+              192
+            ],
+            [
+              228,
+              230
+            ]
+          ]
+        },
+        {
+          "pid": 23,
+          "arrival_time": 51,
+          "burst_time": 4,
+          "priority": 3,
+          "waiting_time": 71,
+          "turnaround_time": 75,
+          "response_time": 71,
+          "completion_time": 126,
+          "execution_history": [
+            [
+              122,
+              126
+            ]
+          ]
+        },
+        {
+          "pid": 24,
+          "arrival_time": 52,
+          "burst_time": 15,
+          "priority": 0,
+          "waiting_time": 196,
+          "turnaround_time": 211,
+          "response_time": 74,
+          "completion_time": 263,
+          "execution_history": [
+            [
+              126,
+              130
+            ],
+            [
+              192,
+              196
+            ],
+            [
+              230,
+              234
+            ],
+            [
+              260,
+              263
+            ]
+          ]
+        }
+      ]
+    }
+  }
+}
